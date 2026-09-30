@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "source": "GameFramework local release, documented metadata-only derivatives, and pinned official platform SDK snapshots",
+  "files": [
+    {
+      "path": "vendor/dotnet/Framework.Core.dll",
+      "sha256": "1773ec0968eb0e44fa16143a8874bcdfb64d559540bd96c5b09270d125a87a28"
+    },
+    {
+      "path": "vendor/dotnet/Framework.Deterministic.dll",
+      "sha256": "db6e988669cb887fcfe52a5f8b14bfc8fcc1e56f4939b6e622e1a4c234ade52e"
+    },
+    {
+      "path": "vendor/dotnet/Framework.Network.Kcp.dll",
+      "sha256": "3f989f3146144c5be83b0b8b5fb035fb0d4821c33a01bb263a6615c0de165688"
+    },
+    {
+      "path": "vendor/dotnet/Kcp.dll",
+      "sha256": "686e0e35e0bbf2ac88a61c19c41f001706a091ae9eae19ca44f677096deb6bfe"
+    },
+    {
+      "path": "vendor/upm/com.code-philosophy.hybridclr-8.5.0.tgz",
+      "sha256": "32d766d274d575bdd3d513074df0a2bb929c12ca80e3d8e5d802ce7faf8535c2"
+    },
+    {
+      "path": "vendor/upm/com.framework.core-1.0.0-alpha.7.tgz",
+      "sha256": "0757af193aa0079f4a45f0cdd15c9907e09a69d6495997477d0c458dad22aeb7"
+    },
+    {
+      "path": "vendor/upm/com.framework.deterministic-1.0.0-alpha.7.insectspace.1.tgz",
+      "sha256": "2ff74e073d664e0234ad25b3edc7807c3a67b8cdb5334a6b05b0eef0dfb675d9"
+    },
+    {
+      "path": "vendor/upm/com.framework.deterministic-1.0.0-alpha.7.tgz",
+      "sha256": "a63bb949e0c885154f6c22110c0a3d45ac53c60e75cbaa11c147093f2ba081e5"
+    },
+    {
+      "path": "vendor/upm/com.framework.deterministic.navigation-1.0.0-alpha.7.insectspace.1.tgz",
+      "sha256": "cd76699bee291d3a7f880b301da8de258ddd6696e22fb790c08df4796c6e0044"
+    },
+    {
+      "path": "vendor/upm/com.framework.deterministic.navigation-1.0.0-alpha.7.tgz",
+      "sha256": "3dfa3ceb19a7a958a22a567b73b026385f052fcc205a64c591c7cce4be0799cd"
+    },
+    {
+      "path": "vendor/upm/com.framework.deterministic.physics-1.0.0-alpha.7.insectspace.1.tgz",
+      "sha256": "3f5074fc5c8752d78d846064b74c628e83e77166346fe1d415bb3be3d714c396"
+    },
+    {
+      "path": "vendor/upm/com.framework.deterministic.physics-1.0.0-alpha.7.tgz",
+      "sha256": "f5fee5e35701e5c41db297ddea8bb438429e7dd65c64b096dfc29a9ade076b21"
+    },
+    {
+      "path": "vendor/upm/com.framework.network.kcp-1.0.0-alpha.7.tgz",
+      "sha256": "ccea024eb548daddfd4a6a89aa41b425e6a6b76725d3e128c14c05dbeec55a6f"
+    },
+    {
+      "path": "vendor/upm/com.framework.unity-1.0.0-alpha.7.tgz",
+      "sha256": "9e11942de9ae446abcc8b89361d67f9552043ac7293c81203f68a035fc141a71"
+    },
+    {
+      "path": "vendor/upm/com.framework.zstring-2.5.0-framework.1.tgz",
+      "sha256": "907fde05cda3d45b0756e0b122520203957bab42046adacf0aadcbbe6281ebfd"
+    },
+    {
+      "path": "vendor/upm/com.tuyoogame.yooasset-3.0.5.tgz",
+      "sha256": "3233bd69ca67aa8715aa1b0699371311b518cff68d85156721dd3d6ff23f51d5"
+    },
+    {
+      "path": "vendor/upm/com.qq.weixin.minigame-0.1.32.tgz",
+      "sha256": "cc829ba939fe96c113e0e4cc3ccd15b2a5224179ae2d59b39379f3f8eaa30725"
+    },
+    {
+      "path": "vendor/upm/com.qq.weixin.minigame-0.1.34-a09d4b2.tgz",
+      "sha256": "e6c6bb7d64b16858dadcf7b5718adc61e191de4fd3b5defde8c954e16a70b0d6"
+    }
+  ]
+}

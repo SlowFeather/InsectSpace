@@ -1,0 +1,7 @@
+{
+  "name": "InsectSpace.Contracts",
+  "rootNamespace": "InsectSpace.Contracts",
+  "references": [],
+  "autoReferenced": false,
+  "noEngineReferences": true
+}

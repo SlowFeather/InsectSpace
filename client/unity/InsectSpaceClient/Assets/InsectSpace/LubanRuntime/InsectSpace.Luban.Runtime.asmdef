@@ -1,0 +1,8 @@
+{
+  "name": "InsectSpace.Luban.Runtime",
+  "rootNamespace": "Luban",
+  "references": [],
+  "allowUnsafeCode": true,
+  "autoReferenced": false,
+  "noEngineReferences": true
+}

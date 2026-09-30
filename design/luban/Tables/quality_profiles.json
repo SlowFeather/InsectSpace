@@ -1,0 +1,5 @@
+[
+  { "id": 0, "name": "Low", "targetFps": 30, "visiblePlayers": 12 },
+  { "id": 1, "name": "Medium", "targetFps": 30, "visiblePlayers": 24 },
+  { "id": 2, "name": "High", "targetFps": 60, "visiblePlayers": 40 }
+]

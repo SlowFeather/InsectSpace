@@ -1,0 +1,6 @@
+{
+  "name": "InsectSpace.Rendering",
+  "rootNamespace": "InsectSpace.Rendering",
+  "references": ["InsectSpace.Contracts", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"],
+  "autoReferenced": false
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "package": "com.framework.deterministic",
+    "originalVersion": "1.0.0-alpha.7",
+    "derivedVersion": "1.0.0-alpha.7.insectspace.1",
+    "reason": "Add missing UPM .meta files only; runtime binaries unchanged.",
+    "originalSha256": "a63bb949e0c885154f6c22110c0a3d45ac53c60e75cbaa11c147093f2ba081e5",
+    "derivedSha256": "2ff74e073d664e0234ad25b3edc7807c3a67b8cdb5334a6b05b0eef0dfb675d9",
+    "binaryHashes": {
+      "Framework.Deterministic.dll": "DB6E988669CB887FCFE52A5F8B14BFC8FCC1E56F4939B6E622E1A4C234ADE52E"
+    }
+  },
+  {
+    "package": "com.framework.deterministic.navigation",
+    "originalVersion": "1.0.0-alpha.7",
+    "derivedVersion": "1.0.0-alpha.7.insectspace.1",
+    "reason": "Add missing UPM .meta files only; runtime binaries unchanged.",
+    "originalSha256": "3dfa3ceb19a7a958a22a567b73b026385f052fcc205a64c591c7cce4be0799cd",
+    "derivedSha256": "cd76699bee291d3a7f880b301da8de258ddd6696e22fb790c08df4796c6e0044",
+    "binaryHashes": {
+      "Framework.Deterministic.Navigation.dll": "96D4642C752C283FDDC94CA6C1E26FD15E105827E4E295390FD480880BEE5483"
+    }
+  },
+  {
+    "package": "com.framework.deterministic.physics",
+    "originalVersion": "1.0.0-alpha.7",
+    "derivedVersion": "1.0.0-alpha.7.insectspace.1",
+    "reason": "Add missing UPM .meta files only; runtime binaries unchanged.",
+    "originalSha256": "f5fee5e35701e5c41db297ddea8bb438429e7dd65c64b096dfc29a9ade076b21",
+    "derivedSha256": "3f5074fc5c8752d78d846064b74c628e83e77166346fe1d415bb3be3d714c396",
+    "binaryHashes": {
+      "Framework.Deterministic.Physics.dll": "A59D81D8E6F2F59FD6BE5B32E38CA3E5B3CC2DF2A679DF24BB066ABBA31AA159"
+    }
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "name": "InsectSpace.EditMode.Tests",
+  "references": [
+    "InsectSpace.Client.Runtime", "InsectSpace.Contracts", "InsectSpace.Foundation",
+    "InsectSpace.Client.Editor", "InsectSpace.Network", "InsectSpace.Platform.WeChat",
+    "YooAsset", "YooAsset.Editor", "HybridCLR.Editor"
+  ],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false,
+  "versionDefines": [
+    { "name": "com.qq.weixin.minigame", "expression": "0.1.1", "define": "INSECTSPACE_WECHAT_SDK" }
+  ]
+}

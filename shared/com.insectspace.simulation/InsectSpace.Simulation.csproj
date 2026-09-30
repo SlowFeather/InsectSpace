@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Runtime/**/*.cs" />
+    <ProjectReference Include="../com.insectspace.contracts/InsectSpace.Contracts.csproj" />
+    <Reference Include="Framework.Deterministic">
+      <HintPath>../../vendor/dotnet/Framework.Deterministic.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

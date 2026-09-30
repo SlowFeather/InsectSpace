@@ -1,0 +1,9 @@
+{
+  "name": "InsectSpace.Gameplay.HotUpdate",
+  "rootNamespace": "InsectSpace.Gameplay",
+  "references": [
+    "InsectSpace.Client.Runtime", "InsectSpace.Contracts", "InsectSpace.Foundation",
+    "InsectSpace.Simulation", "InsectSpace.Luban.Runtime", "InsectSpace.Rendering", "InsectSpace.Network", "YooAsset"
+  ],
+  "autoReferenced": false
+}

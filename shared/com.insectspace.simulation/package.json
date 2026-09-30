@@ -1,0 +1,10 @@
+{
+  "name": "com.insectspace.simulation",
+  "version": "0.1.0",
+  "displayName": "InsectSpace Deterministic Simulation",
+  "unity": "2022.3",
+  "dependencies": {
+    "com.insectspace.contracts": "0.1.0",
+    "com.framework.deterministic": "1.0.0-alpha.7.insectspace.1"
+  }
+}

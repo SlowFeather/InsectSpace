@@ -1,0 +1,15 @@
+# Replace these example team slugs with real organization teams before enabling
+# required reviews. CODEOWNERS alone does not enforce branch protection.
+/vendor/ @insectspace/platform
+/shared/ @insectspace/platform
+/tools/ @insectspace/platform
+/client/unity/InsectSpaceClient/Packages/ @insectspace/platform
+/client/unity/InsectSpaceClient/ProjectSettings/ @insectspace/platform
+/client/unity/InsectSpaceClient/Assets/InsectSpace/Runtime/ @insectspace/platform
+/client/unity/InsectSpaceClient/Assets/InsectSpace/Editor/ @insectspace/platform
+/client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/World/ @insectspace/world
+/client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Battle/ @insectspace/battle
+/client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Player/ @insectspace/player
+/client/unity/InsectSpaceClient/Assets/InsectSpace/Rendering/ @insectspace/rendering
+/design/ @insectspace/design
+/server/ @insectspace/server

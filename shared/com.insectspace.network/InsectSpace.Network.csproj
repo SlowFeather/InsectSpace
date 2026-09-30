@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Runtime/**/*.cs" />
+    <ProjectReference Include="../com.insectspace.contracts/InsectSpace.Contracts.csproj" />
+    <ProjectReference Include="../com.insectspace.foundation/InsectSpace.Foundation.csproj" />
+    <Reference Include="Framework.Core"><HintPath>../../vendor/dotnet/Framework.Core.dll</HintPath></Reference>
+    <Reference Include="Framework.Network.Kcp"><HintPath>../../vendor/dotnet/Framework.Network.Kcp.dll</HintPath></Reference>
+    <Reference Include="Kcp"><HintPath>../../vendor/dotnet/Kcp.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

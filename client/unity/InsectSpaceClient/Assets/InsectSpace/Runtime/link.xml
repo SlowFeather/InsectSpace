@@ -1,0 +1,5 @@
+<linker>
+  <!-- Stable framework extension points must survive before gameplay modules use them. -->
+  <assembly fullname="InsectSpace.Contracts" preserve="all" />
+  <assembly fullname="InsectSpace.Rendering" preserve="all" />
+</linker>

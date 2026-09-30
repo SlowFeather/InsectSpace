@@ -1,0 +1,9 @@
+{
+  "name": "InsectSpace.Network",
+  "rootNamespace": "InsectSpace.Network",
+  "references": ["InsectSpace.Contracts", "InsectSpace.Foundation"],
+  "overrideReferences": true,
+  "precompiledReferences": ["Framework.Core.dll", "Framework.Network.Kcp.dll", "Kcp.dll"],
+  "autoReferenced": false,
+  "noEngineReferences": true
+}

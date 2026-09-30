@@ -1,0 +1,9 @@
+{
+  "name": "InsectSpace.Simulation",
+  "rootNamespace": "InsectSpace.Simulation",
+  "references": ["InsectSpace.Contracts"],
+  "overrideReferences": true,
+  "precompiledReferences": ["Framework.Deterministic.dll"],
+  "autoReferenced": false,
+  "noEngineReferences": true
+}

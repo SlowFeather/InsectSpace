@@ -1,0 +1,9 @@
+{
+  "name": "InsectSpace.PlayMode.Tests",
+  "references": [
+    "InsectSpace.Client.Runtime", "InsectSpace.Contracts", "InsectSpace.Foundation",
+    "InsectSpace.Rendering", "InsectSpace.Network", "YooAsset", "InsectSpace.Gameplay.HotUpdate"
+  ],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

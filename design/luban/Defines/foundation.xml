@@ -1,0 +1,17 @@
+<module name="">
+  <bean name="WorldScene">
+    <var name="id" type="int"/>
+    <var name="key" type="string"/>
+    <var name="displayName" type="string"/>
+    <var name="packageName" type="string"/>
+    <var name="maxVisiblePlayers" type="int"/>
+  </bean>
+  <table name="TbWorldScene" value="WorldScene" input="*@world_scenes.json" index="id"/>
+  <bean name="QualityProfile">
+    <var name="id" type="int"/>
+    <var name="name" type="string"/>
+    <var name="targetFps" type="int"/>
+    <var name="visiblePlayers" type="int"/>
+  </bean>
+  <table name="TbQualityProfile" value="QualityProfile" input="*@quality_profiles.json" index="id"/>
+</module>

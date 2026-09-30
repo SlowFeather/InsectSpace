@@ -1,0 +1,14 @@
+{
+  "editorSimulate": true,
+  "localSmokeMode": true,
+  "resourceMode": 0,
+  "packageName": "Core",
+  "packageVersion": "foundation-001",
+  "playerBuildId": "foundation-native-001",
+  "discoverRemoteVersion": true,
+  "contentPackages": [{"name": "WorldCommon", "version": "foundation-001"}],
+  "remoteRoot": "",
+  "fallbackRoot": "",
+  "quality": 1,
+  "tableLocations": ["tbworldscene", "tbqualityprofile"]
+}

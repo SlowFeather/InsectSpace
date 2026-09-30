@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../shared/com.insectspace.foundation/InsectSpace.Foundation.csproj" />
+    <ProjectReference Include="../../shared/com.insectspace.simulation/InsectSpace.Simulation.csproj" />
+    <ProjectReference Include="../../shared/com.insectspace.network/InsectSpace.Network.csproj" />
+    <Reference Include="Framework.Core"><HintPath>../../vendor/dotnet/Framework.Core.dll</HintPath></Reference>
+    <Reference Include="Framework.Deterministic"><HintPath>../../vendor/dotnet/Framework.Deterministic.dll</HintPath></Reference>
+    <Reference Include="Framework.Network.Kcp"><HintPath>../../vendor/dotnet/Framework.Network.Kcp.dll</HintPath></Reference>
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/World/WorldPresenceStore.cs" Link="WorldPresenceStore.cs" />
+  </ItemGroup>
+</Project>

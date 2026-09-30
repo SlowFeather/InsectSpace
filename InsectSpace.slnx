@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/server/">
+    <Project Path="server/InsectSpace.Server/InsectSpace.Server.csproj" />
+  </Folder>
+  <Folder Name="/shared/" />
+  <Folder Name="/shared/com.insectspace.contracts/">
+    <Project Path="shared/com.insectspace.contracts/InsectSpace.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/shared/com.insectspace.foundation/">
+    <Project Path="shared/com.insectspace.foundation/InsectSpace.Foundation.csproj" />
+  </Folder>
+  <Folder Name="/shared/com.insectspace.network/">
+    <Project Path="shared/com.insectspace.network/InsectSpace.Network.csproj" />
+  </Folder>
+  <Folder Name="/shared/com.insectspace.simulation/">
+    <Project Path="shared/com.insectspace.simulation/InsectSpace.Simulation.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/InsectSpace.Foundation.Tests/InsectSpace.Foundation.Tests.csproj" />
+  </Folder>
+</Solution>

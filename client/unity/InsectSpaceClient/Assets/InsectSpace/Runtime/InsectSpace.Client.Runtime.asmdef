@@ -1,0 +1,9 @@
+{
+  "name": "InsectSpace.Client.Runtime",
+  "rootNamespace": "InsectSpace.Client",
+  "references": [
+    "Framework.Unity", "InsectSpace.Contracts", "InsectSpace.Foundation",
+    "YooAsset", "HybridCLR.Runtime", "InsectSpace.Network"
+  ],
+  "autoReferenced": false
+}
