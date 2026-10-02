@@ -38,6 +38,15 @@ namespace InsectSpace.Client
 
         public IEnumerator Load(YooResourceService resources, BootConfiguration config, Action<Assembly> complete)
         {
+#if UNITY_WEBGL && INSECTSPACE_WEB_DEVELOPMENT && !UNITY_EDITOR
+            config.ValidateWebDevelopment();
+            var compiled = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(a => a.GetName().Name == AssemblyName);
+            if (compiled == null) throw new InvalidOperationException("Web development gameplay assembly is missing.");
+            resources.BindContentCatalog(config.contentPackages);
+            Debug.Log("[InsectSpace] WEB_DEVELOPMENT_CODE: compiled gameplay; HybridCLR injection is not exercised.");
+            complete(compiled);
+            yield break;
+#else
 #if UNITY_EDITOR
             if (config.editorSimulate)
             {
@@ -91,6 +100,7 @@ namespace InsectSpace.Client
             Debug.Log("[InsectSpace] NATIVE_CODE_LOADED aot=" + manifest.aot.Length +
                 " assembly=" + assembly.GetName().Name + " sha256=" + manifest.hotUpdate[0].sha256);
             complete(assembly);
+#endif
         }
 
         public static IHotUpdateApplication CreateApplication(Assembly assembly, BootContext context)

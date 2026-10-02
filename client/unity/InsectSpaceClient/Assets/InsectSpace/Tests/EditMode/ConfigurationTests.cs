@@ -17,6 +17,9 @@ namespace InsectSpace.Tests
             FoundationSetup.Prepare();
             Assert.AreEqual(FoundationSetup.ScenePath, EditorBuildSettings.scenes[0].path);
             Assert.IsTrue(EditorBuildSettings.scenes[0].enabled);
+            Assert.AreEqual(typeof(SceneAsset), AssetDatabase.GetMainAssetTypeAtPath(FoundationSetup.ScenePath));
+            Assert.AreEqual(typeof(SceneAsset), AssetDatabase.GetMainAssetTypeAtPath(
+                "Assets/InsectSpace/Content/WorldCommon/WorldSandbox" + FoundationSetup.SceneExtension));
         }
         [Test]
         public void HotUpdateIsSeparateAndExplicitlyConfigured()

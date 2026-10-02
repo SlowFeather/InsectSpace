@@ -1,32 +1,47 @@
 param(
-    [ValidateSet('Prepare','Artifacts','EditMode','PlayMode','Native','NativePatch','MiniGame','MiniGameNative','WeChatPrepare','WeChatNative')][string]$Action = 'Prepare',
-    [string]$Editor = 'D:\APP\UnityEditor\2022.3.2t2\2022.3.62t16\Editor\Tuanjie.exe',
+    [ValidateSet('Prepare','Artifacts','EditMode','PlayMode','Native','NativePatch','MiniGame','MiniGameNative','WeChatPrepare','WeChatNative','Web','ExportGuids')][string]$Action = 'Prepare',
+    [ValidateSet('Tuanjie','Unity')][string]$Engine = 'Tuanjie',
+    [string]$Editor,
     [int]$TimeoutSeconds = 600
 )
 $ErrorActionPreference = 'Stop'
-$root = Split-Path $PSScriptRoot -Parent
-$sourceProject = Join-Path $root 'client/unity/InsectSpaceClient'
-$project = Join-Path $root '.artifacts/unity/ValidationClient'
-$output = Join-Path $root '.artifacts/validation'
+. "$PSScriptRoot/Client-Environment.ps1"
+$root = $ClientRepositoryRoot
+$profile = Get-ClientEngine $Engine
+if ($Action -notin $profile.supportedActions) { throw "$Action is not supported on $Engine. No build or package changes were made." }
+$Editor = Resolve-ClientEditor $Engine $Editor
+& "$PSScriptRoot/Initialize-Client.ps1" -Engine $Engine
+$sourceProject = Join-Path $root $profile.project
+$project = Join-Path $root $profile.validationProject
+$output = Join-Path $root $profile.validationOutput
 New-Item -ItemType Directory -Force $output | Out-Null
-if (!(Test-Path -LiteralPath $Editor)) { throw "Tuanjie editor not found: $Editor. Supply -Editor." }
-$lock = Join-Path $project 'Temp/TuanjieLockfile'
-if (Test-Path $lock) {
-    try { $handle = [IO.File]::Open($lock, 'Open', 'ReadWrite', 'None'); $handle.Dispose() }
-    catch { throw 'The isolated validation copy is already running.' }
-}
+Assert-ClientProjectClosed $project
 # Same directory depth preserves the vendored UPM relative paths. Never move or
 # close the user's live project, and keep build/test work out of its Library.
 New-Item -ItemType Directory -Force $project | Out-Null
 foreach ($folder in @('Assets','Packages','ProjectSettings')) {
-    New-Item -ItemType Directory -Force (Join-Path $project $folder) | Out-Null
-    Copy-Item -Path "$sourceProject/$folder/*" -Destination "$project/$folder" -Recurse -Force
+    $destination = [IO.Path]::GetFullPath((Join-Path $project $folder))
+    $artifactRoot = [IO.Path]::GetFullPath((Join-Path $root '.artifacts')) + [IO.Path]::DirectorySeparatorChar
+    if (!$destination.StartsWith($artifactRoot, [StringComparison]::OrdinalIgnoreCase) -or
+        $destination -ne [IO.Path]::GetFullPath((Join-Path $root "$($profile.validationProject)/$folder"))) {
+        throw "Unsafe validation destination: $destination"
+    }
+    if (Test-Path -LiteralPath $destination) {
+        $links = @(Get-Item -LiteralPath $destination) + @(Get-ChildItem -LiteralPath $destination -Force -Recurse -Attributes ReparsePoint)
+        if (@($links | Where-Object { $_.Attributes -band [IO.FileAttributes]::ReparsePoint }).Count -ne 0) {
+            throw "Validation copy unexpectedly contains links: $destination"
+        }
+        # Only the checked, closed validation input directories; Library and build evidence stay intact.
+        Remove-Item -LiteralPath $destination -Recurse -Force
+    }
+    Copy-ClientDirectory (Join-Path $sourceProject $folder) $destination
 }
 $manifestFile = Join-Path $project 'Packages/manifest.json'
 $manifest = Get-Content -Raw $manifestFile | ConvertFrom-Json -AsHashtable
 # Optional editor assistants are machine-local and unrelated to framework validation.
 $manifest.dependencies.Remove('cn.tuanjie.ai.generators')
 $manifest.dependencies.Remove('cn.tuanjie.codely.bridge')
+$manifest.dependencies.Remove('com.unity.pipeline')
 if ($Action -eq 'MiniGameNative') {
     $manifest.dependencies.Remove('com.qq.weixin.minigame')
 }
@@ -42,6 +57,8 @@ switch ($Action) {
     'MiniGameNative' { $arguments += @('-buildTarget','MiniGame','-executeMethod','InsectSpace.Editor.MiniGameBuild.ExportNative','-quit') }
     'WeChatPrepare' { $arguments += @('-buildTarget','MiniGame','-executeMethod','InsectSpace.Editor.MiniGameBuild.SelectWeChatPlatform','-quit') }
     'WeChatNative' { $arguments += @('-buildTarget','MiniGame','-executeMethod','InsectSpace.Editor.WeChatBuild.ExportNative','-quit') }
+    'Web' { $arguments += @('-buildTarget','WebGL','-executeMethod','InsectSpace.Editor.WebDevelopmentBuild.Build','-quit') }
+    'ExportGuids' { $arguments += @('-executeMethod','InsectSpace.Editor.PortableAssetIds.Export','-quit') }
     default {
         $arguments += @('-runTests','-testPlatform',$Action,'-testResults',"`"$output/$Action.xml`"")
         $resultPath = Join-Path $output "$Action.xml"
@@ -55,7 +72,7 @@ if ($Action -eq 'NativePatch') {
     $motherHash = (Get-FileHash -LiteralPath (Join-Path $project 'HybridCLRData/ValidationPlayer/GameAssembly.dll') -Algorithm SHA256).Hash
 }
 try {
-    if ($Action -in @('Artifacts','Native','NativePatch','MiniGameNative','WeChatNative')) {
+    if ($Action -in @('Artifacts','Native','NativePatch','MiniGameNative','WeChatNative','Web')) {
         # Keep published versions immutable while allowing repeated validation runs.
         $env:INSECTSPACE_BUILD_OUTPUT_ROOT = Join-Path $root ('.artifacts/yoo/validation-' + [Guid]::NewGuid().ToString('N'))
     }
@@ -85,7 +102,7 @@ if ($Action -in @('EditMode','PlayMode')) {
     }
     Write-Host "$Action passed: $($result.'test-run'.passed) tests."
 } else {
-    $marker = if ($Action -eq 'WeChatPrepare') { 'WECHAT_SUBPLATFORM_SELECTED WeChat' } else { 'FOUNDATION_PREPARED' }
+    $marker = if ($Action -eq 'WeChatPrepare') { 'WECHAT_SUBPLATFORM_SELECTED WeChat' } elseif ($Action -eq 'ExportGuids') { 'PORTABLE_ASSET_IDS_EXPORTED' } else { 'FOUNDATION_PREPARED' }
     if (!(Select-String -Path $log -Pattern $marker -Quiet)) {
         throw "Missing preparation completion marker. See $log"
     }
@@ -133,5 +150,8 @@ if ($Action -in @('EditMode','PlayMode')) {
         }
         & "$PSScriptRoot/Test-WeChatExport.ps1"
     }
+    if ($Action -eq 'Web' -and !(Select-String -Path $log -Pattern 'WEB_DEVELOPMENT_BUILT' -Quiet)) {
+        throw "Missing Web development build completion marker. See $log"
+    }
 }
-Write-Host "Unity $Action verified. Log: $log"
+Write-Host "$Engine $Action verified. Log: $log"

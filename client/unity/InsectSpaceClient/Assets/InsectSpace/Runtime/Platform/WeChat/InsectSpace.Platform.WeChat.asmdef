@@ -3,6 +3,7 @@
   "rootNamespace": "InsectSpace.Platform.WeChat",
   "references": ["InsectSpace.Client.Runtime", "InsectSpace.Contracts", "InsectSpace.Network", "Wx", "YooAsset"],
   "autoReferenced": false,
+  "defineConstraints": ["INSECTSPACE_WECHAT_SDK"],
   "versionDefines": [
     { "name": "com.qq.weixin.minigame", "expression": "0.1.1", "define": "INSECTSPACE_WECHAT_SDK" }
   ]

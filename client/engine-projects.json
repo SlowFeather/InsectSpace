@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "sharedAssetsProject": "client/unity/InsectSpaceClient",
+  "sharedAssetDirectories": [
+    "InsectSpace/Editor/Shared",
+    "InsectSpace/HotUpdate",
+    "InsectSpace/LubanRuntime",
+    "InsectSpace/Rendering",
+    "InsectSpace/Runtime",
+    "InsectSpace/Tests",
+    "InsectSpace/Resources",
+    "InsectSpace/Content/Data"
+  ],
+  "engineSpecificPackages": ["com.framework.unity", "com.tuyoogame.yooasset", "com.qq.weixin.minigame"],
+  "engines": {
+    "Tuanjie": {
+      "project": "client/tuanjie/InsectSpaceClient",
+      "version": "2022.3.62t16",
+      "executable": "Tuanjie.exe",
+      "editorEnvironment": "INSECTSPACE_TUANJIE_EDITOR",
+      "validationProject": ".artifacts/unity/ValidationClient",
+      "validationOutput": ".artifacts/validation",
+      "supportedActions": ["Prepare", "EditMode", "PlayMode", "Artifacts", "Native", "NativePatch", "MiniGame", "MiniGameNative", "WeChatPrepare", "WeChatNative", "ExportGuids"]
+    },
+    "Unity": {
+      "project": "client/unity/InsectSpaceClient",
+      "version": "6000.6.3f1",
+      "executable": "Unity.exe",
+      "editorEnvironment": "INSECTSPACE_UNITY_EDITOR",
+      "validationProject": ".artifacts/unity6/ValidationClient",
+      "validationOutput": ".artifacts/validation/unity6",
+      "supportedActions": ["Prepare", "EditMode", "PlayMode", "Web"]
+    }
+  }
+}

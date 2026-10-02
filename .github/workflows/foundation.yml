@@ -15,6 +15,9 @@ jobs:
       - name: Protect Architecture
         shell: pwsh
         run: ./tools/Test-Architecture.ps1
+      - name: Verify Dual Engine Layout
+        shell: pwsh
+        run: ./tools/Test-ClientEnvironment.ps1
       - name: Foundation And Real Transport Tests
         shell: pwsh
         run: ./tools/Test-Foundation.ps1

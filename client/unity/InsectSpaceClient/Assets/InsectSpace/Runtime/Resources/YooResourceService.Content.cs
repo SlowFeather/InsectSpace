@@ -98,7 +98,7 @@ namespace InsectSpace.Client
         public AssetHandle LoadAsset<T>(string packageName, string address) where T : UnityEngine.Object =>
             GetContent(packageName).LoadAssetAsync<T>(address);
 
-        public SceneHandle LoadScene(string packageName, string address) =>
+        public YooAsset.SceneHandle LoadScene(string packageName, string address) =>
             GetContent(packageName).LoadSceneAsync(address, LoadSceneMode.Additive);
 
         private ResourcePackage GetContent(string name)

@@ -3,6 +3,8 @@
 /vendor/ @insectspace/platform
 /shared/ @insectspace/platform
 /tools/ @insectspace/platform
+/client/engine-projects.json @insectspace/platform
+/client/tuanjie/ @insectspace/platform
 /client/unity/InsectSpaceClient/Packages/ @insectspace/platform
 /client/unity/InsectSpaceClient/ProjectSettings/ @insectspace/platform
 /client/unity/InsectSpaceClient/Assets/InsectSpace/Runtime/ @insectspace/platform

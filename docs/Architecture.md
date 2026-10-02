@@ -10,6 +10,8 @@
 
 ## 依赖图
 
+客户端现有两种引擎入口：团结微信工程位于 `client/tuanjie/InsectSpaceClient`，Unity 6.6 Web 开发工程位于 `client/unity/InsectSpaceClient`。两者共用源码、契约和表数据，独立保存引擎包、场景、渲染设置、缓存和产物。Unity Web 开发通过明确的编译符号与 Development 构建模式使用已编译玩法；仍经反射进入 AOT 接口，不建立 AOT 到热更程序集的引用。该开发模式不声称原生热更或在线浏览器传输已完成，也不绕过微信发布门禁。详见 [双引擎开发](Dual-Engine.md)。
+
 ```text
 Bootstrap (AOT)
   -> GF Base / FSM / 网络管理器
