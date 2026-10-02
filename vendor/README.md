@@ -38,3 +38,18 @@ Use `tools/Import-ReferenceDependencies.ps1` only for deliberate SDK baseline
 updates. Do not unpack and patch release archives in place. Source-code review,
 upstream licenses, package provenance, and platform compatibility remain release
 responsibilities; checksums alone are not a signature or a license grant.
+
+## Unity 6.6 compatibility release
+
+The Tuanjie project retains the original GF Unity adapter, YooAsset 3.0.5 and WeChat SDK.
+The Unity project selects the complete upstream YooAsset 3.0.6 UPM release and the complete
+`com.framework.unity` package `1.0.0-alpha.7.insectspace.unity66.2`. The latter adapts only
+debugger window IDs and editor log redirect IDs/callbacks to Unity 6.6 EntityId APIs.
+Core/server/deterministic DLLs are unchanged; no vendor code is copied into gameplay.
+The Tuanjie-only WeChat conversion package is absent from Unity Web.
+
+`unity6-sdk-release.json` records the upstream commit, source archive hash, changes and
+release checksums. `tools/Build-UnitySdkCompatibility.py` reproducibly builds whole packages,
+preserves original archives and DLL bytes, and refuses to overwrite a different existing
+versioned release. `dependencies.lock.json` includes all release hashes. Platform review is
+still required before merging/releasing these compatibility changes.

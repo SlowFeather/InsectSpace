@@ -1,4 +1,4 @@
-#if DEVELOPMENT_BUILD && ENABLE_IL2CPP && !UNITY_EDITOR
+#if DEVELOPMENT_BUILD && ENABLE_IL2CPP && !UNITY_EDITOR && !INSECTSPACE_WEB_DEVELOPMENT
 using System;
 using System.Collections;
 using InsectSpace.Contracts;

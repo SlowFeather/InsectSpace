@@ -47,8 +47,28 @@ foreach ($file in $aotFiles) {
         throw "AOT source imports hot-update namespace: $($file.FullName)"
     }
 }
-$manifestFile = Join-Path $root 'client/unity/InsectSpaceClient/Packages/manifest.json'
+. "$PSScriptRoot/Client-Environment.ps1"
+$configuration = Get-ClientConfiguration
+foreach ($engine in $configuration.engines.Keys) {
+$profile = Get-ClientEngine $engine
+$manifestFile = Join-Path $root "$($profile.project)/Packages/manifest.json"
 $manifest = Get-Content -Raw $manifestFile | ConvertFrom-Json -AsHashtable
+$versionFile = Join-Path $root "$($profile.project)/ProjectSettings/ProjectVersion.txt"
+if (!(Select-String -LiteralPath $versionFile -Pattern "^m_EditorVersion: $([regex]::Escape($profile.version))$" -Quiet)) {
+    throw "$engine project has the wrong editor version."
+}
+if ($engine -eq 'Tuanjie' -and $manifest.dependencies.ContainsKey('com.unity.pipeline')) {
+    throw 'Unity Pipeline must not enter the Tuanjie 2022 project.'
+}
+if ($engine -eq 'Unity' -and @($manifest.dependencies.Keys | Where-Object { $_ -like 'cn.tuanjie.*' }).Count -gt 0) {
+    throw 'Tuanjie assistant packages must not enter the Unity project.'
+}
+if ($engine -eq 'Unity' -and $manifest.dependencies.ContainsKey('com.unity.modules.infinity')) {
+    throw 'Tuanjie Infinity module is not available in Unity 6.'
+}
+if ($engine -eq 'Unity' -and $manifest.dependencies.ContainsKey('com.qq.weixin.minigame')) {
+    throw 'The Tuanjie WeChat conversion SDK must not be compiled into the Unity Web project.'
+}
 foreach ($name in $manifest.dependencies.Keys) {
     $version = $manifest.dependencies[$name]
     if ($name -like 'com.framework.*' -or $name -in @('com.tuyoogame.yooasset','com.code-philosophy.hybridclr','com.qq.weixin.minigame')) {
@@ -59,4 +79,11 @@ foreach ($name in $manifest.dependencies.Keys) {
         if (!(Test-Path -LiteralPath $path)) { throw "Unresolvable local package: $name" }
     }
 }
-Write-Host "ARCHITECTURE_PASSED: SDK hashes, $($byName.Count) assemblies, dependency direction, simulation purity, package paths."
+}
+foreach ($file in Get-ChildItem -LiteralPath (Join-Path $root 'client/unity/InsectSpaceClient/Assets'), (Join-Path $root 'shared') -Recurse -File -Filter '*.meta') {
+    if ($file.FullName -match '[\\/](bin|obj)[\\/]') { continue }
+    if ((Get-Content -LiteralPath $file.FullName -Raw) -notmatch '(?m)^guid: [0-9a-f]{32}\s*$') {
+        throw "Non-portable asset GUID: $($file.FullName). See docs/Dual-Engine.md."
+    }
+}
+Write-Host "ARCHITECTURE_PASSED: SDK hashes, $($byName.Count) assemblies, dependency direction, simulation purity, both engine manifests and versions."

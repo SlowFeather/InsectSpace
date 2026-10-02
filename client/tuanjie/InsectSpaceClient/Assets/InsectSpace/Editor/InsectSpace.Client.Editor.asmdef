@@ -1,0 +1,25 @@
+{
+  "name": "InsectSpace.Client.Editor",
+  "rootNamespace": "InsectSpace.Editor",
+  "references": [
+    "InsectSpace.Client.Runtime",
+    "InsectSpace.Contracts",
+    "InsectSpace.Rendering",
+    "YooAsset",
+    "YooAsset.Editor",
+    "HybridCLR.Editor",
+    "HybridCLR.Runtime",
+    "WxEditor"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "autoReferenced": false,
+  "versionDefines": [
+    {
+      "name": "com.qq.weixin.minigame",
+      "expression": "0.1.1",
+      "define": "INSECTSPACE_WECHAT_SDK"
+    }
+  ]
+}

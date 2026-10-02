@@ -14,7 +14,11 @@ namespace InsectSpace.Tests
         [UnityTest]
         public IEnumerator BootstrapSceneLoadsAndReachesWorld()
         {
+#if UNITY_6000_0_OR_NEWER && !TUANJIE_2022_3_OR_NEWER
+            const string path = "Assets/InsectSpace/Scenes/Bootstrap.unity";
+#else
             const string path = "Assets/InsectSpace/Scenes/Bootstrap.scene";
+#endif
             yield return SceneManager.LoadSceneAsync(path, LoadSceneMode.Additive);
             var scene = SceneManager.GetSceneByPath(path);
             var bootstrap = Object.FindObjectOfType<InsectSpaceBootstrap>();

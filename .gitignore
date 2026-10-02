@@ -1,5 +1,6 @@
 **/[Ll]ibrary/
 **/[Tt]emp/
+**/Assets/Temp.meta
 **/[Oo]bj/
 **/[Bb]in/
 shared/**/bin.meta
@@ -28,3 +29,19 @@ output/playwright/
 
 # Local reference material must not be published.
 /doc/参考/
+/docs/参考/
+
+# Tuanjie shares source directories through local links created by Initialize-Client.
+/client/tuanjie/InsectSpaceClient/Assets/InsectSpace/Editor/Shared
+/client/tuanjie/InsectSpaceClient/Assets/InsectSpace/HotUpdate
+/client/tuanjie/InsectSpaceClient/Assets/InsectSpace/LubanRuntime
+/client/tuanjie/InsectSpaceClient/Assets/InsectSpace/Rendering
+/client/tuanjie/InsectSpaceClient/Assets/InsectSpace/Runtime
+/client/tuanjie/InsectSpaceClient/Assets/InsectSpace/Tests
+/client/tuanjie/InsectSpaceClient/Assets/InsectSpace/Resources
+/client/tuanjie/InsectSpaceClient/Assets/InsectSpace/Content/Data
+**/Assets/StreamingAssets/yoo/
+**/Assets/StreamingAssets/yoo.meta
+**/Assets/InsectSpace/Generated/
+**/Assets/InsectSpace/Generated.meta
+**/Bundles/

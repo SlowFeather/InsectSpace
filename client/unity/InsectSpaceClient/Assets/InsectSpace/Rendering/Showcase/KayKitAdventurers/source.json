@@ -1,0 +1,23 @@
+{
+  "source": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+  "revision": "672074b73ba276876a19e8816ecdc5241817ab47",
+  "license": "CC0-1.0",
+  "files": [
+    {
+      "name": "LICENSE.txt",
+      "sha256": "AE322141814056DDA0DEEA7540D74C41D87AEE1DA319977CD1BD84EE5A923629"
+    },
+    {
+      "name": "mage_texture.png",
+      "sha256": "EA49F094B960402635FE51DB9F1864960C97271B17F2E3554E5ACA1B2BBBA144"
+    },
+    {
+      "name": "Mage.fbx",
+      "sha256": "93B401D56E2547316F8841A4AC0086011C64D79185C9CB7623567C2DBF125C7D"
+    },
+    {
+      "name": "staff.fbx",
+      "sha256": "74D044A7FCA7AD1CBABCED27BA5B1297BC12C8C86C06847E5F66B031FEF6E480"
+    }
+  ]
+}

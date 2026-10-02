@@ -1,0 +1,29 @@
+{
+  "release": "insectspace-unity66-2",
+  "reviewStatus": "platform-review-required",
+  "packages": [
+    {
+      "package": "com.framework.unity",
+      "version": "1.0.0-alpha.7.insectspace.unity66.2",
+      "sha256": "92e4dd58c41d9557ba9f765666efa87d822cd42167488f392bc93872f9cb8b62",
+      "sourceSha256": "9e11942de9ae446abcc8b89361d67f9552043ac7293c81203f68a035fc141a71",
+      "source": "vendor/upm/com.framework.unity-1.0.0-alpha.7.tgz",
+      "changes": [
+        "Debugger GUI identifiers and editor log redirect callbacks use EntityId on Unity 6.6."
+      ],
+      "unchangedDllHashes": {}
+    },
+    {
+      "package": "com.tuyoogame.yooasset",
+      "version": "3.0.6",
+      "sha256": "b3e8c319f740f9985a9f7e5b3f23803a125c5ed092803913edad0e302bc78380",
+      "sourceCommit": "3b4cfb36cc2e81b9558ab74d65fee2cf2eac2804",
+      "sourceArchiveSha256": "f21fd77ec2722c7133bc142f0223bfd5da375957411f599c70aee4d4fa9426cb",
+      "source": "https://github.com/tuyoogame/YooAsset",
+      "changes": [
+        "Complete unmodified Assets/YooAsset UPM release."
+      ]
+    }
+  ],
+  "coreAndServerDlls": "Unchanged; see dependencies.lock.json"
+}

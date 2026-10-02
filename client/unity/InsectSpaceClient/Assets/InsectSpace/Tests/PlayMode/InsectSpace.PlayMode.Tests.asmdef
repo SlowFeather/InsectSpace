@@ -5,5 +5,7 @@
     "InsectSpace.Rendering", "InsectSpace.Network", "YooAsset", "InsectSpace.Gameplay.HotUpdate"
   ],
   "optionalUnityReferences": ["TestAssemblies"],
+  "overrideReferences": true,
+  "precompiledReferences": ["Framework.Core.dll", "nunit.framework.dll"],
   "autoReferenced": false
 }

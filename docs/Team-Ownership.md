@@ -18,6 +18,8 @@
 
 ## 核心保护
 
+双引擎的 `client/engine-projects.json`、两个工程的 Packages/ProjectSettings、引擎专用 asmdef、Web 开发构建门禁和 SDK 兼容发布归平台组。团结侧共享目录由初始化脚本建立，源码仍按原有模块目录负责；不要提交复制出来的第二套业务代码。平台评审与测试证据见 [双引擎开发](Dual-Engine.md) 和 [验证记录](Validation.md)。
+
 1. GF 核心仅分发预编译 SDK，当前从参考项目固定版本包引入；不把源码暴露到日常业务目录。
 2. SDK 包和 .NET DLL 的 SHA-256 记录在 `vendor/dependencies.lock.json`，架构测试检查完整性。
 3. asmdef + noEngineReferences 限制依赖；静态检查拒绝 AOT → HotUpdate、共享代码 → Unity、确定性代码 → 浮点/随机/系统时间。

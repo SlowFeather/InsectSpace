@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "source": "GameFramework local release, documented metadata-only derivatives, and pinned official platform SDK snapshots",
+  "source": "Pinned original SDK releases, documented compatibility releases, and official platform SDK snapshots",
   "files": [
     {
       "path": "vendor/dotnet/Framework.Core.dll",
@@ -73,6 +73,18 @@
     {
       "path": "vendor/upm/com.qq.weixin.minigame-0.1.34-a09d4b2.tgz",
       "sha256": "e6c6bb7d64b16858dadcf7b5718adc61e191de4fd3b5defde8c954e16a70b0d6"
+    },
+    {
+      "path": "vendor/upm/com.framework.unity-1.0.0-alpha.7.insectspace.unity66.1.tgz",
+      "sha256": "b6724f3dfd67bf748ae3ec0877a61a15b19512e7cd0b7ef49971bed7523eb36b"
+    },
+    {
+      "path": "vendor/upm/com.tuyoogame.yooasset-3.0.6.tgz",
+      "sha256": "b3e8c319f740f9985a9f7e5b3f23803a125c5ed092803913edad0e302bc78380"
+    },
+    {
+      "path": "vendor/upm/com.framework.unity-1.0.0-alpha.7.insectspace.unity66.2.tgz",
+      "sha256": "92e4dd58c41d9557ba9f765666efa87d822cd42167488f392bc93872f9cb8b62"
     }
   ]
 }

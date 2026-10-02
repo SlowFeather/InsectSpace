@@ -1,0 +1,393 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-10-02",
+  "purpose": "LOCAL ART STUDY; not routing or production configuration",
+  "source": {
+    "path": "docs/参考/蛊真人.txt",
+    "sha256": "07afe4646b25c3c7fd39243ad5b162777331400820be746b7654de6831e9c296"
+  },
+  "defaultEra": "qingmao_opening",
+  "promptDocument": "QingMao-GuYue-Prompts.md",
+  "scenes": [
+    {
+      "id": "SB-QM-01",
+      "name": "青茅山三寨区域图",
+      "spaceAndEra": "地表区域 / 开篇",
+      "artDirection": "山脊、林谷、三寨和交通，不拼成单寨",
+      "priority": "P1",
+      "sourceNotes": "L197、227、2204–2208",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "GY-01",
+      "name": "古月山寨总览",
+      "spaceAndEra": "地表聚落 / 开篇",
+      "artDirection": "数千吊楼的聚落规模、中心五层家主阁",
+      "priority": "P0",
+      "sourceNotes": "L193–199、616",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "GY-02",
+      "name": "家主阁与中心街区",
+      "spaceAndEra": "地表核心 / 开篇",
+      "artDirection": "广场、五层楼、道路汇聚，开窍入口",
+      "priority": "P0",
+      "sourceNotes": "L614–626",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "GY-03",
+      "name": "东寨门与酒肆",
+      "spaceAndEra": "地表门户 / 开篇",
+      "artDirection": "人流入口、一层酒肆、地下酒窖",
+      "priority": "P0",
+      "sourceNotes": "L15838–15850",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "GY-04",
+      "name": "学堂与演武场",
+      "spaceAndEra": "院落 / 开篇",
+      "artDirection": "青灰石场、密植青矛竹墙、教学",
+      "priority": "P0",
+      "sourceNotes": "L1051、3310–3318",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "GY-05",
+      "name": "灵泉与开窍洞窟",
+      "spaceAndEra": "地下 / 开篇",
+      "artDirection": "幽蓝浅河、对岸月兰花、深处灵泉",
+      "priority": "P0",
+      "sourceNotes": "L622–658、773",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "GY-06",
+      "name": "月夜竹林",
+      "spaceAndEra": "寨外探索 / 开篇",
+      "artDirection": "青矛竹、鹅卵石溪、酒虫引路",
+      "priority": "P0",
+      "sourceNotes": "L2081–2101、2170–2194",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "GY-07",
+      "name": "花酒传承洞口",
+      "spaceAndEra": "支流河滩 / 开篇",
+      "artDirection": "细瀑遮住巨石狭缝，隐蔽入口",
+      "priority": "P0",
+      "sourceNotes": "L2200–2220",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "GY-08",
+      "name": "花酒传承石室",
+      "spaceAndEra": "地下 / 开篇",
+      "artDirection": "约80平方米、暗红光、枯藤与影壁线索",
+      "priority": "P0",
+      "sourceNotes": "L2254–2278、2484",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "GY-09",
+      "name": "居住竹楼巷道",
+      "spaceAndEra": "地表/可选内景",
+      "artDirection": "生活叙事、檐下雨水、错层窄巷",
+      "priority": "P0",
+      "sourceNotes": "L195、1490；巷道为 A",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "GY-10",
+      "name": "商队临时集市",
+      "spaceAndEra": "事件叠加 / 商队到来",
+      "artDirection": "布棚、货箱、蛊材、赌石；平日留空",
+      "priority": "P1",
+      "sourceNotes": "L1721、3577、5696",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "GY-11",
+      "name": "内务堂与药堂",
+      "spaceAndEra": "功能节点 / 开篇",
+      "artDirection": "任务与医疗的阅读空间；建筑位置为 A",
+      "priority": "P1",
+      "sourceNotes": "L13498–13525、14862",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "GY-12",
+      "name": "北寨门与外围防线",
+      "spaceAndEra": "门户 / 开篇或狼潮",
+      "artDirection": "林缘、哨位、空旷守御面",
+      "priority": "P1",
+      "sourceNotes": "L15840；防线布局为 A",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "QM-BAI",
+      "name": "白家寨与后山瀑潭",
+      "spaceAndEra": "地表邻寨",
+      "artDirection": "大瀑布和深潭，区别于古月的细支流",
+      "priority": "P1",
+      "sourceNotes": "L2204–2208",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "QM-XIONG",
+      "name": "熊家寨",
+      "spaceAndEra": "地表邻寨",
+      "artDirection": "深木与厚重轮廓为 A，精确地形待考",
+      "priority": "P1",
+      "sourceNotes": "L227、6441",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "QM-FOOT",
+      "name": "山脚村庄与河道",
+      "spaceAndEra": "地表村落",
+      "artDirection": "吞江蟾事件、黄龙江支流，独立于山寨",
+      "priority": "P1",
+      "sourceNotes": "L18288、18444",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "QM-WOLF",
+      "name": "狼潮外围",
+      "spaceAndEra": "同图事件状态",
+      "artDirection": "防线封锁、灯火、林缘压力",
+      "priority": "P1",
+      "sourceNotes": "L4429；视觉为 A",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "SB-RIVER",
+      "name": "黄龙江",
+      "spaceAndEra": "地表交通带",
+      "artDirection": "长河、竹筏、沿途山岭；不是光阴长河",
+      "priority": "P2",
+      "sourceNotes": "L33833–33835",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "SB-BONE",
+      "name": "白骨山与白骨传承",
+      "spaceAndEra": "山区＋地下秘境",
+      "artDirection": "骨白地质、狭窄洞室；具体外观为 A",
+      "priority": "P2",
+      "sourceNotes": "L6209、38206起",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "SB-SHANG",
+      "name": "商量山 / 商家城",
+      "spaceAndEra": "山城",
+      "artDirection": "环山商贸、分层城区；后续逐章深化",
+      "priority": "P2",
+      "sourceNotes": "L39877–39887、48389",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "SB-THREE",
+      "name": "三叉山 / 三王传承",
+      "spaceAndEra": "山区＋独立传承",
+      "artDirection": "三个入口与山地争夺；精确布图待考",
+      "priority": "P2",
+      "sourceNotes": "L59412–59418",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "SB-YITIAN",
+      "name": "义天山",
+      "spaceAndEra": "章节战区",
+      "artDirection": "平时山岭与大战状态分资产",
+      "priority": "P2",
+      "sourceNotes": "L44927、45236",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "CC-TIANTI",
+      "name": "天梯山",
+      "spaceAndEra": "地表入口",
+      "artDirection": "高山与断裂阶梯；狐仙福地单独加载",
+      "priority": "P2",
+      "sourceNotes": "L61628–61630、74900",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "CC-HUXIAN",
+      "name": "狐仙福地 / 荡魂山",
+      "spaceAndEra": "独立空间",
+      "artDirection": "水晶山作为视觉核心，非大陆普通山峰",
+      "priority": "P2",
+      "sourceNotes": "L67479、78072",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "NP-COURT",
+      "name": "王庭福地 / 真阳楼",
+      "spaceAndEra": "独立空间 / 对应章节",
+      "artDirection": "巨大楼体与内部关卡，毁坏状态分开",
+      "priority": "P2",
+      "sourceNotes": "L80843、89202、103668",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "NP-LANGYA",
+      "name": "琅琊福地",
+      "spaceAndEra": "独立空间",
+      "artDirection": "炼蛊主题；历史迁移与形态另核对",
+      "priority": "P2",
+      "sourceNotes": "L77287、81827",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "NP-SNOW",
+      "name": "大雪山福地",
+      "spaceAndEra": "独立空间",
+      "artDirection": "雪峰层次与据点；不等同北原普通雪山",
+      "priority": "P2",
+      "sourceNotes": "L94137–94139",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "NP-CRAZED",
+      "name": "疯魔窟",
+      "spaceAndEra": "地下秘境",
+      "artDirection": "层层深入、异常结构；层数布局另考据",
+      "priority": "P3",
+      "sourceNotes": "L219466、405175",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "WD-OASIS",
+      "name": "西漠绿洲商城群",
+      "spaceAndEra": "地表区域",
+      "artDirection": "水源、商道与生存边界；不虚构原作城名",
+      "priority": "P2",
+      "sourceNotes": "L78100–78108",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "ES-TURB",
+      "name": "乱流海域",
+      "spaceAndEra": "海域",
+      "artDirection": "迷宫水流、碎岛、危险航线",
+      "priority": "P2",
+      "sourceNotes": "L193408–193416",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "ES-WHALE",
+      "name": "苍蓝龙鲸探索",
+      "spaceAndEra": "特殊入口 / 中后期",
+      "artDirection": "鲸内探索另建场景，不绘成固定海岛",
+      "priority": "P3",
+      "sourceNotes": "L215664",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "SKY-WHITE",
+      "name": "白天探索",
+      "spaceAndEra": "天空域",
+      "artDirection": "珍珠白与巨大空域，天庭另设节点",
+      "priority": "P3",
+      "sourceNotes": "L71362–71366",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "SKY-BLACK",
+      "name": "黑天探索",
+      "spaceAndEra": "天空域",
+      "artDirection": "深靛、兽影、稀疏冷光",
+      "priority": "P3",
+      "sourceNotes": "L207658、85439",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "SKY-COURT",
+      "name": "天庭",
+      "spaceAndEra": "独立势力空间",
+      "artDirection": "中洲叙事关联，精确空间入口待专题考据",
+      "priority": "P3",
+      "sourceNotes": "L74900；不固定成地表城池",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "SKY-TREASURE",
+      "name": "宝黄天",
+      "spaceAndEra": "特殊洞天",
+      "artDirection": "柠檬黄光、珍宝交易，原文无普通山水植被",
+      "priority": "P2",
+      "sourceNotes": "L85427–85447",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "SECRET-TIME",
+      "name": "光阴长河",
+      "spaceAndEra": "特殊时空",
+      "artDirection": "历史流动和时间关卡，不入地表水系",
+      "priority": "P3",
+      "sourceNotes": "L33123、70482、73288",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "SECRET-SOUL",
+      "name": "落魄谷 / 逆流河",
+      "spaceAndEra": "天地秘境",
+      "artDirection": "拆成两场景；位置与归属随剧情核对",
+      "priority": "P3",
+      "sourceNotes": "L75469；不能固定画成普通邻接谷河",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    },
+    {
+      "id": "SKY-SPECTRAL",
+      "name": "幽天",
+      "spaceAndEra": "后期时代变体",
+      "artDirection": "冰寒蓝火、黑白交融之后的天空",
+      "priority": "P3",
+      "sourceNotes": "L436852–436876",
+      "layoutStatus": "proposed_art_layout",
+      "contentStatus": "internal_reference_study"
+    }
+  ]
+}
