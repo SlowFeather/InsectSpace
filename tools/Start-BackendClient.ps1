@@ -1,4 +1,4 @@
-param([switch]$Stop)
+param([switch]$Stop, [switch]$RemoteResources, [ValidateRange(1024,65535)][int]$ResourcePort = 18088)
 . (Join-Path $PSScriptRoot 'unity-demo/UnityDemoCli.ps1')
 if ($Stop) {
     $state = Invoke-DemoRead @('command', 'editor_status')
@@ -11,6 +11,7 @@ if ($Stop) {
     if ($state.playMode -ne 'stopped') { throw 'Editor did not leave Play; scene restoration remains pending.' }
     $restore = @'
 System.Environment.SetEnvironmentVariable("INSECTSPACE_EDITOR_BACKEND", null);
+System.Environment.SetEnvironmentVariable("INSECTSPACE_EDITOR_RESOURCE_ROOT", null);
 var value = UnityEditor.SessionState.GetString("InsectSpace.Backend.PreviousScenes", "");
 if (!string.IsNullOrEmpty(value)) {
     var setup = Newtonsoft.Json.JsonConvert.DeserializeObject<UnityEditor.SceneManagement.SceneSetup[]>(value);
@@ -29,6 +30,10 @@ return "Restored scene setup and disabled the explicit backend switch";
     return
 }
 Assert-DemoEditor
+if ($RemoteResources) {
+    $health = Invoke-RestMethod "http://127.0.0.1:$ResourcePort/healthz" -TimeoutSec 3
+    if ($health.role -ne 'yooasset-local-host' -or $health.operatingSystem -ne 'Linux') { throw 'Start the WSL resource host first.' }
+}
 foreach ($port in 8081,8082,8083) {
     $health = Invoke-RestMethod "http://127.0.0.1:$port/healthz" -TimeoutSec 3
     if (!$health.mySql -or !$health.redis -or $health.operatingSystem -ne 'Linux') { throw 'Start the native WSL backend first.' }
@@ -45,6 +50,8 @@ System.Environment.SetEnvironmentVariable("INSECTSPACE_EDITOR_BACKEND", "true");
 return "Explicit WSL DEV/TEST client selected";
 '@
 $null = Invoke-DemoCommand @('command','eval',$setup)
+$remoteRoot = if ($RemoteResources) { '"http://127.0.0.1:' + $ResourcePort + '"' } else { 'null' }
+$null = Invoke-DemoCommand @('command','eval',('System.Environment.SetEnvironmentVariable("INSECTSPACE_EDITOR_RESOURCE_ROOT",' + $remoteRoot + '); return true;'))
 $null = Invoke-DemoCommand @('command','eval_file',(Join-Path $PSScriptRoot 'unity-demo/ConfigureDemoView.cs'))
 $null = Invoke-DemoCommand @('command','editor_play')
 Write-Host 'WSL client started. Enter your phone, leave the code empty for a server whitelist entry; later launches restore the protected Token.'

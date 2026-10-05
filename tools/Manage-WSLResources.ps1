@@ -2,6 +2,8 @@ param(
     [ValidateSet('Start','Stop','Test')][string]$Action = 'Start',
     [string]$SourceRoot = '',
     [string]$Version = 'foundation-001',
+    [string]$CoreDirectory = '',
+    [string]$WorldDirectory = '',
     [ValidateRange(1024,65535)][int]$Port = 18088,
     [string]$Distro = 'Ubuntu-24.04'
 )
@@ -17,6 +19,15 @@ if ($Action -eq 'Start') {
     $linuxSource = (& wsl.exe -d $Distro -- wslpath -a $source).Trim()
     if ($LASTEXITCODE -ne 0) { throw 'Could not resolve published resource directory.' }
     $arguments += @('--source',$linuxSource)
+    foreach ($pair in @(@{Value=$CoreDirectory; Argument='--core-directory'},@{Value=$WorldDirectory; Argument='--world-directory'})) {
+        if ($pair.Value) {
+            $directory = [IO.Path]::GetFullPath($pair.Value).Replace('\','/')
+            if (!(Test-Path -LiteralPath $directory -PathType Container)) { throw 'Published package directory is missing.' }
+            $linuxDirectory = (& wsl.exe -d $Distro -- wslpath -a $directory).Trim()
+            if ($LASTEXITCODE -ne 0) { throw 'Could not resolve published package directory.' }
+            $arguments += @($pair.Argument,$linuxDirectory)
+        }
+    }
 }
 & wsl.exe @arguments
 if ($LASTEXITCODE -ne 0) { throw "WSL resource $Action failed." }

@@ -10,6 +10,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -20,10 +21,14 @@ parser.add_argument('action', choices=['start', 'stop', 'test', 'serve'])
 parser.add_argument('--root', required=True)
 parser.add_argument('--source')
 parser.add_argument('--version', default='foundation-001')
+parser.add_argument('--core-directory')
+parser.add_argument('--world-directory')
 parser.add_argument('--port', type=int, default=18088)
 args = parser.parse_args()
 root = Path(args.root).resolve()
 state_dir = root / '.artifacts/validation/backend-resources'
+if args.port != 18088:
+    state_dir = state_dir / ('port-' + str(args.port))
 state_dir.mkdir(parents=True, exist_ok=True)
 state_file = state_dir / 'host.json'
 script = Path(__file__).resolve()
@@ -42,6 +47,9 @@ def owned(state):
 if args.action == 'serve':
     release = Path(args.source).resolve()
     manifest = json.loads((release / 'files.json').read_text())
+    request_lock = threading.Lock()
+    requests = state_dir / 'requests.jsonl'
+    requests.write_text('')
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_):
             pass  # Do not log requests or query strings.
@@ -77,6 +85,10 @@ if args.action == 'serve':
             self.end_headers()
             if not head:
                 self.wfile.write(data)
+                if path != '/healthz':
+                    # Only successful published keys; never headers or query strings.
+                    with request_lock, requests.open('a') as evidence:
+                        evidence.write(json.dumps(dict(path='/' + key, bytes=len(data), sha256=manifest[key]['sha256'], at=time.time())) + '\n')
     ThreadingHTTPServer(('127.0.0.1', args.port), Handler).serve_forever()
     sys.exit(0)
 
@@ -98,15 +110,26 @@ elif args.action == 'start':
         raise SystemExit('Resource host already running; stop it before changing releases.')
     source = Path(args.source).resolve()
     files = {}
+    directories = {}
+    versions = {}
     for package in ('Core', 'WorldCommon'):
-        directory = source / package / args.version
+        override = args.core_directory if package == 'Core' else args.world_directory
+        directory = Path(override).resolve() if override else source / package / args.version
         if not directory.is_dir():
             raise SystemExit('Missing published package: ' + package)
-        for name in (f'{package}.version', f'{package}_{args.version}.bytes', f'{package}_{args.version}.hash'):
+        version_file = directory / f'{package}.version'
+        if not version_file.is_file():
+            raise SystemExit('Missing published version pointer: ' + package)
+        version = version_file.read_text(encoding='utf-8-sig').strip()
+        if not version or len(version) > 100 or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._' for c in version):
+            raise SystemExit('Invalid published package version.')
+        for name in (f'{package}.version', f'{package}_{version}.bytes', f'{package}_{version}.hash'):
             if not (directory / name).is_file():
                 raise SystemExit('Missing package metadata: ' + name)
-        if (directory / f'{package}.version').read_text(encoding='utf-8-sig').strip() != args.version:
+        if not override and version != args.version:
             raise SystemExit('Published version pointer mismatch.')
+        directories[package] = directory
+        versions[package] = version
         for file in directory.iterdir():
             if file.is_file() and not file.is_symlink() and file.suffix in ('.version', '.bytes', '.hash', '.bundle', '.rawfile'):
                 files[package + '/' + file.name] = dict(sha256=digest(file), size=file.stat().st_size)
@@ -122,13 +145,13 @@ elif args.action == 'start':
                 raise SystemExit('An immutable staged release has changed; inspect it before restarting.')
         else:
             temporary = dest.with_name(dest.name + '.staging')
-            shutil.copyfile(source / package / args.version / name, temporary)
+            shutil.copyfile(directories[package] / name, temporary)
             temporary.replace(dest)
         dest.chmod(0o400)
     (release / 'files.json').write_text(json.dumps(files, indent=2))
     with (state_dir / 'host.log').open('w') as log:
         proc = subprocess.Popen([sys.executable, str(script), 'serve', '--root', str(root), '--source', str(release), '--port', str(args.port)], stdin=subprocess.DEVNULL, stdout=log, stderr=log, start_new_session=True, cwd=release)
-    state = dict(pid=proc.pid, start=Path(f'/proc/{proc.pid}/stat').read_text().split()[21], port=args.port, release=str(release), releaseId=release_id, version=args.version, source=str(source))
+    state = dict(pid=proc.pid, start=Path(f'/proc/{proc.pid}/stat').read_text().split()[21], port=args.port, release=str(release), releaseId=release_id, version=versions['Core'], versions=versions, source=str(source))
     state_file.write_text(json.dumps(state, indent=2))
     try:
         for attempt in range(50):

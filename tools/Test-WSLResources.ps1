@@ -21,9 +21,9 @@ try {
     $timer.Restart()
     do {
         Start-Sleep -Milliseconds 500
-        $result=(Invoke-DemoRead @('command','eval','var p=UnityEngine.Object.FindFirstObjectByType<InsectSpace.Tests.BackendResourceProbe>(); return new { done=p.Done,error=p.Error,version=p.Version,preDownloads=p.Downloads,remoteTableReads=p.RemoteTableReads,tableBytes=p.TableBytes,progress=p.Progress };')).result
+        $result=(Invoke-DemoRead @('command','eval','var p=UnityEngine.Object.FindFirstObjectByType<InsectSpace.Tests.BackendResourceProbe>(); return new { done=p.Done,error=p.Error,version=p.Version,preDownloads=p.Downloads,remoteTableReads=p.RemoteTableReads,tableBytes=p.TableBytes,progress=p.Progress,remotePrefabLoaded=p.RemotePrefabLoaded,remoteSceneLoaded=p.RemoteSceneLoaded,remoteSceneUnloaded=p.RemoteSceneUnloaded };')).result
     } while (!$result.done -and $timer.Elapsed.TotalSeconds -lt 90)
-    if (!$result.done -or $result.error -or $result.remoteTableReads -ne 2 -or $result.tableBytes -lt 1 -or $result.progress -ne 1) { throw "YooAsset WSL download failed: $($result.error)" }
+    if (!$result.done -or $result.error -or $result.remoteTableReads -ne 2 -or $result.tableBytes -lt 1 -or $result.progress -ne 1 -or !$result.remotePrefabLoaded -or !$result.remoteSceneLoaded -or !$result.remoteSceneUnloaded) { throw "YooAsset WSL download failed: $($result.error)" }
     $result | ConvertTo-Json | Set-Content (Join-Path $demoRoot '.artifacts/validation/backend-resources/unity-download.json')
     Write-Host "WSL_YOOASSET_PASS version=$($result.version) remoteTableReads=$($result.remoteTableReads) tableBytes=$($result.tableBytes)"
 } finally {

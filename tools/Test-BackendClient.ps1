@@ -1,4 +1,4 @@
-param([switch]$SkipNetworkInterruption)
+param([switch]$SkipNetworkInterruption, [switch]$RemoteResources, [ValidateRange(1024,65535)][int]$ResourcePort = 18088)
 . (Join-Path $PSScriptRoot 'unity-demo/UnityDemoCli.ps1')
 $evidence = Join-Path $demoRoot '.artifacts/validation/backend-client'
 New-Item -ItemType Directory -Force -Path $evidence | Out-Null
@@ -41,8 +41,16 @@ function Restart-Client {
 $passed = [Collections.Generic.List[string]]::new()
 $networkStopped = $false
 $prepared = $false
+$remoteEvidence = $null
 try {
     Assert-DemoEditor
+    if ($RemoteResources) {
+        $resourceState = Join-Path $demoRoot '.artifacts/validation/backend-resources'
+        if ($ResourcePort -ne 18088) { $resourceState = Join-Path $resourceState "port-$ResourcePort" }
+        $remoteLog = Join-Path $resourceState 'requests.jsonl'
+        if (!(Test-Path -LiteralPath $remoteLog)) { throw 'Start the instrumented WSL resource host before acceptance.' }
+        $firstRemoteRequest = @(Get-Content -LiteralPath $remoteLog).Count
+    }
     # Preserve any existing encrypted user cache. No credential is returned to PowerShell.
     $null = Invoke-DemoCommand @('command','eval', @'
 var cache = new InsectSpace.Gameplay.Modules.BackendSessionCache("http://127.0.0.1:8081");
@@ -54,7 +62,7 @@ UnityEditor.SessionState.SetString("InsectSpace.Backend.TestCache",path);
 return true;
 '@)
     $prepared = $true
-    & (Join-Path $PSScriptRoot 'Start-BackendClient.ps1')
+    & (Join-Path $PSScriptRoot 'Start-BackendClient.ps1') -RemoteResources:$RemoteResources -ResourcePort $ResourcePort
     $null = Wait-Client { param($s) $s.ready -and !$s.busy -and $s.phase -eq 'SignedOut' } 'ready-signed-out'
     $null = Eval-Client @'
 var root = System.IO.Path.GetFullPath(System.IO.Path.Combine(UnityEngine.Application.dataPath, "../../../.."));
@@ -71,6 +79,20 @@ return true;
     Click-Client 'enterWorld'
     $null = Wait-Client { param($s) !$s.busy -and $s.phase -eq 'World' -and $s.worldLoaded } 'world-resource-scene'
     $passed.Add('world-resource-scene')
+    if ($RemoteResources) {
+        $resourceState = Eval-Client 'return new { version=b.Context.Resources.ActiveVersion, tables=b.TableCount, progress=b.Progress, remoteEnabled=!string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("INSECTSPACE_EDITOR_RESOURCE_ROOT")) };'
+        $requests = @(Get-Content -LiteralPath $remoteLog | Select-Object -Skip $firstRemoteRequest | ForEach-Object { $_ | ConvertFrom-Json })
+        $paths = @($requests.path)
+        $tableDownloads = @($paths | Where-Object { $_ -match '^/Core/.*\.rawfile$' } | Select-Object -Unique).Count
+        $worldDownloads = @($paths | Where-Object { $_ -match '^/WorldCommon/.*\.bundle$' } | Select-Object -Unique).Count
+        if (!$resourceState.remoteEnabled -or $resourceState.progress -ne 1 -or
+            '/Core/Core.version' -notin $paths -or "/Core/Core_$($resourceState.version).bytes" -notin $paths -or
+            $tableDownloads -lt $resourceState.tables -or $worldDownloads -lt 1) {
+            throw 'The integrated client did not download the Core tables and world scene from WSL.'
+        }
+        $remoteEvidence = [ordered]@{ version=$resourceState.version; tables=$resourceState.tables; coreRawDownloads=$tableDownloads; worldBundleDownloads=$worldDownloads; requests=$requests }
+        Write-Host "BACKEND_CLIENT_REMOTE_PASS tables=$($resourceState.tables) worldBundles=$worldDownloads"
+    }
     $null = Invoke-DemoCommand @('command','capture_game_view','--source','screen','--width','1440','--height','900','--save_path','Temp/backend-client-world.png')
     Copy-Item (Join-Path $demoProject 'Assets/Temp/backend-client-world.png') (Join-Path $evidence 'world.png')
     Restart-Client
@@ -114,7 +136,8 @@ var suffix = (System.BitConverter.ToUInt32(System.Guid.NewGuid().ToByteArray(),0
     $passed.Add('dev-test-otp-login'); $passed.Add('otp-then-token-only')
     Click-Client 'logout'
     $null = Wait-Client { param($s) !$s.busy -and $s.phase -eq 'SignedOut' -and !$s.cached } 'test-session-cleanup'
-    [ordered]@{ passed=$true; executedAt=[DateTimeOffset]::Now.ToString('o'); tests=$passed.ToArray(); resourceMode='YooAsset Editor simulation; remote hosting verified separately'; realSms=$false } | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $evidence 'result.json')
+    $resourceMode = if ($RemoteResources) { 'WSL remote only, cold cache; compiled Editor gameplay' } else { 'YooAsset Editor simulation' }
+    [ordered]@{ passed=$true; executedAt=[DateTimeOffset]::Now.ToString('o'); tests=$passed.ToArray(); resourceMode=$resourceMode; remoteEvidence=$remoteEvidence; realSms=$false } | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $evidence 'result.json')
 } finally {
     if ($networkStopped) { & (Join-Path $PSScriptRoot 'Start-BackendServices.ps1') }
     if ($prepared) {

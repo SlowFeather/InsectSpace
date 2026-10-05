@@ -229,3 +229,16 @@ Demo 专项验证包括：模块拓扑/失败回滚；角色 Revision 与输入�
 - 本轮修复 Overlay 根对象误销毁、协程异常处理编译错误、WSL 路径/工作目录、MySQL 精度、截图路径和 WebGL 文件系统选择后复验通过。
 
 本轮 UI 场景使用 Editor simulation，WSL 远程读取另行验证；没有将 Editor assembly 模式视作 HybridCLR 原生成功。Runtime/DPAPI 变化未重新通过原生母包或微信真机验收，平台评审仍待完成。正式业务规则、多人 AOI/PvP、短信与生产部署不在已验证范围。需求、命令、证据位置和兼容/回滚见 `Backend-Requirements.md`、`Backend-Validation.md`、`ADR-0006-Backend-Client-Session.md`。
+
+## 2026-10-05：WSL 远程完整启动与原生热更复验
+
+本节更新上一条资源与原生验证边界。沿用现有 YooAsset / HybridCLR 构建工具，通过 Unity CLI 发布当前资源，再由 WSL2 原生只读宿主提供；六个后端角色、MySQL 和 Redis 继续在 WSL2 运行。手机号白名单只存于忽略的本机配置；Token 默认固定 30 天，可通过 `INSECTSPACE_SESSION_HOURS` 配置，恢复不续期。真实短信供应商按用户决定留空。
+
+- `Build-WSLClientResources.ps1 -StartHost` 与 `Test-BackendClient.ps1 -RemoteResources`：9 项通过；同一启动链实际下载 Core 版本、manifest、4 张表和 WorldCommon 场景，再验证白名单登录、大厅、世界场景、Token 重启恢复、断网保留/恢复、退出撤销和 test OTP 后免短信恢复。证据：`.artifacts/validation/backend-client/result.json`。Unity 6 Editor 使用已编译玩法，不声称原生代码注入。
+- WSL 资源宿主：当前发布包 14 文件 hash 一致，越界、目录、未知文件及写入拒绝通过。`Test-WSLResources.ps1`：2 张基础表共 76 bytes、进度完成、远程 prefab 实例化/释放与 scene 加载/卸载通过；证据：`.artifacts/validation/backend-resources/test-result.json`、`unity-download.json`。
+- 团结 `2022.3.62t16` Windows IL2CPP 的 `Native`、`NativePatch` 与 `Test-WSLNativePatch.ps1` 通过：14 份 AOT metadata、8 模块、4 张表，实际加载新代码 revision；WSL 冷缓存 28 次下载、3 个 WorldCommon bundle，母包 `GameAssembly.dll` SHA-256 保持不变。原生 DPAPI 合成凭据加密写入/恢复/清理通过。证据：`.artifacts/validation/native-player.log`、`native-patch-result.json`、`backend-resources/native-wsl-result.json`。
+- 回归：Foundation **85/85**、Architecture 通过，Unity 隔离 EditMode **46/46**、连接图形编辑器的 PlayMode **55/55**，Unity CLI 编译通过。证据：`.artifacts/validation/backend-foundation-final.log`、`backend-architecture-final.log`、`unity6/EditMode.xml`、`client-demo/PlayMode.json`。
+
+原生验证先后因缺少 IL2CPP 模块、导出 Visual Studio solution 设置与旧导出目录冲突失败；用户批准官方安装后，锁定可执行 Player 输出并隔离旧产物后通过。冷缓存首次移除内置目录导致缺少 BuiltinCatalog，改为空清单后通过，测试后恢复内置资源与缓存。无图形 PlayMode 曾因 RenderTexture.Create 失败得到 33/55，改用真实图形编辑器复验 55/55，没有屏蔽失败。团结编码的共享脚本 GUID 通过既有 ExportGuids / Convert-PortableMetadata 工具兼容转换后，Unity 编译恢复。
+
+测试针对当前工作树，包含用户尚未提交的四表、玩法及渲染内容；本轮提交仅包含后端客户端/资源验证相关增量，不接管其他改动。Runtime/Editor 变更的核心平台/服务端正式评审仍待完成。本阶段交付骨架、契约及本地闭环，正式经济/任务/活动结算、多人 AOI/PvP、生产运维、真实短信、微信网络/安全存储与真机发布未验收。启动与复验命令见 [Backend-Validation.md](Backend-Validation.md)。
