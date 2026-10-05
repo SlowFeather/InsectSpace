@@ -21,6 +21,8 @@ namespace InsectSpace.Client
         public string LastError { get; private set; }
         public string Stage { get; private set; } = "Created";
         public string Status => application?.Status ?? Stage;
+        public float Progress => resources?.Progress ?? (Ready ? 1f : 0f);
+        public string ProgressStage => Stage == "YooAsset" ? resources?.ProgressStage ?? Stage : Stage;
         public int ModuleCount => application?.Modules.Count ?? 0;
         public int TableCount { get; private set; }
         public BootContext Context { get; private set; }
@@ -31,6 +33,7 @@ namespace InsectSpace.Client
             instance = this;
             DontDestroyOnLoad(gameObject);
             gameObject.AddComponent<BaseComponent>();
+            gameObject.AddComponent<BootstrapProgressOverlay>();
             fsms = GameFrameworkEntry.GetModule<IFsmManager>();
             var fsm = fsms.CreateFsm(this, new StartupState(), new ReadyState(), new FailedState());
             fsm.Start<StartupState>();

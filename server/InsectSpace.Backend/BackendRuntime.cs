@@ -42,7 +42,7 @@ public sealed class BackendRuntime : IAsyncDisposable
     {
         var mysql = await MySqlBackendStore.CanConnectAsync(Options.MySqlConnectionString, cancellationToken);
         var redis = await Redis.Database.PingAsync() < TimeSpan.FromSeconds(5);
-        return new ServiceHealth(role.ToString(), mysql, redis, DateTimeOffset.UtcNow);
+        return new ServiceHealth(role.ToString(), mysql, redis, DateTimeOffset.UtcNow, OperatingSystem.IsLinux() ? "Linux" : System.Runtime.InteropServices.RuntimeInformation.OSDescription, Environment.ProcessId);
     }
 
     public async ValueTask DisposeAsync()

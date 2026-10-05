@@ -1,14 +1,7 @@
 [CmdletBinding()]
-param([string]$StatePath = '')
-
+param([string]$Distro = 'Ubuntu-24.04')
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
-if ([string]::IsNullOrWhiteSpace($StatePath)) { $StatePath = Join-Path $root '.artifacts/validation/backend/services.json' }
-if (!(Test-Path -LiteralPath $StatePath)) { Write-Host 'No backend service state file found.'; exit 0 }
-$entries = @(Get-Content -Raw -LiteralPath $StatePath | ConvertFrom-Json)
-foreach ($entry in $entries) {
-    $process = Get-Process -Id ([int]$entry.Pid) -ErrorAction SilentlyContinue
-    if ($process) { Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue }
-}
-Remove-Item -LiteralPath $StatePath -Force -ErrorAction SilentlyContinue
-Write-Host 'Backend services stopped.'
+$linuxRoot = (& wsl.exe -d $Distro -- wslpath -a $root.Replace('\','/')).Trim()
+& wsl.exe -d $Distro -- python3 "$linuxRoot/tools/backend/manage.py" stop --root $linuxRoot --environment "$linuxRoot/.artifacts/validation/backend/wsl.env"
+if ($LASTEXITCODE -ne 0) { throw 'Native WSL2 backend stop failed.' }

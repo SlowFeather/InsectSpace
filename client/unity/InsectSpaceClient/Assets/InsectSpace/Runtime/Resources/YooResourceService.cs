@@ -14,6 +14,8 @@ namespace InsectSpace.Client
         public bool Ready => !disposed && ActiveVersion != null && package != null && package.PackageValid;
         public string ActiveVersion { get; private set; }
         public int PendingDownloadCount { get; private set; }
+        public float Progress { get; private set; }
+        public string ProgressStage { get; private set; } = "Waiting";
 
         public YooResourceService(Func<BootConfiguration, string, bool, InitializePackageOptions> platformOptions = null)
         {
@@ -27,6 +29,8 @@ namespace InsectSpace.Client
             if (YooAssets.IsInitialized) throw new InvalidOperationException("Bootstrap must own the YooAsset lifetime.");
             settings = JsonUtility.FromJson<BootConfiguration>(JsonUtility.ToJson(config));
             config = settings;
+            Progress = 0f;
+            ProgressStage = "Initializing resources";
             YooAssets.Initialize();
             ownsYoo = true;
             package = YooAssets.CreatePackage(config.packageName);
@@ -40,12 +44,14 @@ namespace InsectSpace.Client
 #endif
             if (discover)
             {
+                ProgressStage = "Checking resource version";
                 var request = package.RequestPackageVersionAsync(new RequestPackageVersionOptions(true, 30));
                 yield return request;
                 Check(request);
                 version = request.PackageVersion;
             }
             // Resolve once, then pin code and tables to this same immutable Core manifest.
+            ProgressStage = "Loading resource manifest";
             var manifest = package.LoadPackageManifestAsync(new LoadPackageManifestOptions(version, 30));
             yield return manifest;
             Check(manifest);
@@ -53,11 +59,18 @@ namespace InsectSpace.Client
             PendingDownloadCount = download.TotalDownloadCount;
             if (download.TotalDownloadCount > 0)
             {
+                ProgressStage = "Downloading resources";
                 download.StartDownload();
-                yield return download;
+                while (!download.IsDone)
+                {
+                    Progress = download.Progress;
+                    yield return null;
+                }
                 Check(download);
             }
             ActiveVersion = version;
+            Progress = 1f;
+            ProgressStage = "Resources ready";
 #if UNITY_EDITOR
             if (config.editorSimulate) BindContentCatalog(config.contentPackages);
 #endif

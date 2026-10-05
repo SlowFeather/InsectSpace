@@ -39,7 +39,7 @@ public sealed record BackendOptions(
             mysql,
             Environment.GetEnvironmentVariable("INSECTSPACE_REDIS_CONNECTION") ?? "127.0.0.1:6379,abortConnect=false",
             key,
-            TimeSpan.FromHours(ParseInt("INSECTSPACE_SESSION_HOURS", 24)),
+            SessionDurationFromEnvironment(),
             Environment.GetEnvironmentVariable("INSECTSPACE_BIND_ADDRESS") ?? "127.0.0.1",
             ParseInt("INSECTSPACE_GATEWAY_PORT", 8080),
             ParseInt("INSECTSPACE_IDENTITY_PORT", 8081),
@@ -62,12 +62,22 @@ public sealed record BackendOptions(
 
     private static int ParseInt(string name, int fallback)
         => int.TryParse(Environment.GetEnvironmentVariable(name), out var value) && value > 0 ? value : fallback;
+
+    public static TimeSpan SessionDurationFromEnvironment()
+    {
+        var value = Environment.GetEnvironmentVariable("INSECTSPACE_SESSION_HOURS");
+        if (string.IsNullOrWhiteSpace(value)) return TimeSpan.FromDays(30);
+        if (!int.TryParse(value, out var hours) || hours < 1 || hours > 8760)
+            throw new InvalidOperationException("INSECTSPACE_SESSION_HOURS must be an integer between 1 and 8760.");
+        return TimeSpan.FromHours(hours);
+    }
 }
 
 public sealed record ExternalIdentity(string Provider, string Subject, string? DisplayName);
 public sealed record LoginRequest(string Provider, string Credential);
 public sealed record LoginResponse(string SessionToken, long PlayerId, string HomeRealmId, DateTimeOffset ExpiresAt);
 public sealed record SessionContext(string TokenHash, long PlayerId, string HomeRealmId, DateTimeOffset ExpiresAt);
+public sealed record SessionProfile(long PlayerId, string HomeRealmId, DateTimeOffset ExpiresAt);
 public sealed record PhoneOtpRequest(string PhoneNumber);
 public sealed record PhoneOtpResponse(bool Accepted, string PhoneNumber, DateTimeOffset ExpiresAt, string? DevelopmentCode);
 public sealed record PhoneLoginRequest(string PhoneNumber, string? Code, bool Register);
@@ -121,7 +131,7 @@ public sealed record DurableCommand(
     string Status,
     DateTimeOffset AcceptedAt);
 
-public sealed record ServiceHealth(string Service, bool MySql, bool Redis, DateTimeOffset CheckedAt);
+public sealed record ServiceHealth(string Service, bool MySql, bool Redis, DateTimeOffset CheckedAt, string OperatingSystem, int ProcessId);
 
 public static class BackendServiceRoleParser
 {

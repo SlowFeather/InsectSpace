@@ -217,3 +217,15 @@ Demo 专项验证包括：模块拓扑/失败回滚；角色 Revision 与输入�
 保留首次团结 PlayMode 无图形运行的 **11/16 通过、5 项失败**：Demo、内容和世界表现测试触发 `Not implemented GfxDevice::DrawBuffers() is called` 断言。原始失败结果为 `Tuanjie-PlayMode.xml`；随后在同一隔离工程启用 Direct3D 11 重跑得到 16/16，没有忽略错误日志、跳过失败测试或修改测试断言。两个引擎的图形运行均由日志确认使用实际 AMD Radeon 图形设备。
 
 **验证边界：**本次没有重新构建 Web、IL2CPP 或微信导出，也没有执行微信开发者工具、真机、在线后台、性能或发布验收。上述结果是本地回归，不能代替 GitHub Actions 结果或平台审批；SDK 兼容包、共享元数据、平台 Runtime/Editor 与工程设置仍需平台负责人评审后才能合并/发布。本机缓存、构建产物和 `doc/参考/`、`docs/参考/` 均不纳入本次提交。
+
+## 2026-10-05：WSL 原生六进程与 30 天 Token 客户端闭环
+
+本条更新前述 Windows 宿主状态：六角色现均在 WSL2 原生 Linux 进程运行，MySQL/Redis 仅绑定本机。新增默认固定 30 天、可配置时长的 Token；Windows DPAPI 本机缓存、启动恢复、不续期、撤销/过期拒绝。白名单与密钥仅存在忽略配置。真实短信供应商按用户决定留空。
+
+- `Test-Backend.ps1` 通过：Linux 六进程、MySQL/Redis、白名单/OTP、防重放、固定 30 天与 2 小时配置、重启/撤销/暖缓存过期拒绝、路由/房间/inbox 幂等。
+- `Test-BackendClient.ps1` 9 项通过：真实 Unity UI 登录、WorldCommon 场景、重启 Token、断网缓存/重试、撤销清理，以及 test OTP 后免短信恢复。
+- `Manage-WSLResources.ps1 -Action Test` 通过：现有发布包 11 文件 hash、越界和写入拒绝。`Test-WSLResources.ps1` 使用真实 YooAsset 远程文件系统读取 foundation-001 的两张表，共 76 bytes；下载进度完成。
+- Foundation **85/85**、Architecture 通过、Unity EditMode **46/46** / PlayMode **55/55**，编译 0 error / 0 warning。
+- 本轮修复 Overlay 根对象误销毁、协程异常处理编译错误、WSL 路径/工作目录、MySQL 精度、截图路径和 WebGL 文件系统选择后复验通过。
+
+本轮 UI 场景使用 Editor simulation，WSL 远程读取另行验证；没有将 Editor assembly 模式视作 HybridCLR 原生成功。Runtime/DPAPI 变化未重新通过原生母包或微信真机验收，平台评审仍待完成。正式业务规则、多人 AOI/PvP、短信与生产部署不在已验证范围。需求、命令、证据位置和兼容/回滚见 `Backend-Requirements.md`、`Backend-Validation.md`、`ADR-0006-Backend-Client-Session.md`。

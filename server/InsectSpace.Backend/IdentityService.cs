@@ -15,6 +15,8 @@ public sealed class LocalIdentityProvider : IIdentityProvider
 {
     public Task<ExternalIdentity> ResolveAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
+        if (Environment.GetEnvironmentVariable("INSECTSPACE_LOCAL_BACKEND") != "true")
+            throw new NotSupportedException("Local/test identity requires the explicit local backend topology.");
         if (request is null || string.IsNullOrWhiteSpace(request.Credential) || request.Credential.Length > 191)
             throw new ArgumentException("A local identity credential is required.");
         if (!string.Equals(request.Provider, "local", StringComparison.OrdinalIgnoreCase) &&
@@ -51,7 +53,8 @@ public sealed class IdentityService
     {
         this.mysql = mysql; this.redis = redis; this.options = options; this.provider = provider;
         this.phoneSender = phoneSender ?? new DisabledPhoneCodeSender();
-        phoneMode = Environment.GetEnvironmentVariable("INSECTSPACE_PHONE_AUTH_MODE") ?? "test";
+        phoneMode = Environment.GetEnvironmentVariable("INSECTSPACE_PHONE_AUTH_MODE") ?? "production";
+        if (phoneMode is not ("test" or "production")) throw new InvalidOperationException("Phone authentication mode must be explicitly test or production.");
         phoneWhitelist = LoadPhoneWhitelist();
     }
 
@@ -71,11 +74,11 @@ public sealed class IdentityService
             var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
             var expires = DateTimeOffset.UtcNow.AddMinutes(5);
             var digest = HashCode(phone + ":" + code);
-            await redis.SetStringAsync($"insectspace:otp:{phone}", digest, TimeSpan.FromMinutes(5));
             if (phoneMode.Equals("production", StringComparison.OrdinalIgnoreCase))
                 await phoneSender.SendAsync(phone, code, cancellationToken);
             else if (!phoneMode.Equals("test", StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("INSECTSPACE_PHONE_AUTH_MODE must be 'test' or 'production'.");
+            await redis.SetStringAsync($"insectspace:otp:{phone}", digest, TimeSpan.FromMinutes(5));
             return new PhoneOtpResponse(true, phone, expires, phoneMode.Equals("test", StringComparison.OrdinalIgnoreCase) ? code : null);
         }
     }
@@ -88,10 +91,12 @@ public sealed class IdentityService
 
         if (request is null || request.Code is null || !Regex.IsMatch(request.Code, "^[0-9]{6}$"))
             throw new ArgumentException("A six digit verification code is required.");
-        var expected = await redis.GetStringAsync($"insectspace:otp:{phone}", cancellationToken);
-        if (expected is null || !CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(expected), Encoding.UTF8.GetBytes(HashCode(phone + ":" + request.Code))))
+        var consumed = await redis.Database.ScriptEvaluateAsync(
+            "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end",
+            new StackExchange.Redis.RedisKey[] { $"insectspace:otp:{phone}" },
+            new StackExchange.Redis.RedisValue[] { HashCode(phone + ":" + request.Code) }).WaitAsync(cancellationToken);
+        if ((long)consumed != 1)
             throw new UnauthorizedAccessException("Verification code is invalid or expired.");
-        await redis.DeleteAsync($"insectspace:otp:{phone}");
         return await CreateSessionAsync(new ExternalIdentity("phone", phone, phone), cancellationToken);
     }
 
@@ -100,16 +105,17 @@ public sealed class IdentityService
 
     public async Task<SessionContext?> ResolveSessionAsync(string token, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(token)) return null;
+        if (string.IsNullOrWhiteSpace(token) || token.Length != 64 || !token.All(Uri.IsHexDigit)) return null;
         var tokenHash = HashToken(token);
-        var cached = await redis.GetJsonAsync<SessionContext>(RedisBackendStore.SessionKey(tokenHash), cancellationToken);
-        if (cached is not null && cached.ExpiresAt > DateTimeOffset.UtcNow) return cached;
+        // Long-lived credentials always check the durable revocation/expiry authority.
+        // A stale Redis value must never resurrect a concurrently revoked session.
         await using var connection = await mysql.OpenAsync(cancellationToken);
         await using var command = new MySqlCommand("SELECT player_id, home_realm_id, expires_at FROM sessions WHERE token_hash=@hash AND revoked_at IS NULL", connection);
         command.Parameters.AddWithValue("@hash", tokenHash);
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (!await reader.ReadAsync(cancellationToken)) return null;
-        var context = new SessionContext(tokenHash, reader.GetInt64(0), reader.GetString(1), reader.GetDateTime(2));
+        var context = new SessionContext(tokenHash, reader.GetInt64(0), reader.GetString(1),
+            new DateTimeOffset(DateTime.SpecifyKind(reader.GetDateTime(2), DateTimeKind.Utc)));
         if (context.ExpiresAt <= DateTimeOffset.UtcNow) return null;
         await redis.SetJsonAsync(RedisBackendStore.SessionKey(tokenHash), context, context.ExpiresAt - DateTimeOffset.UtcNow);
         return context;
@@ -137,6 +143,8 @@ public sealed class IdentityService
         var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
         var tokenHash = HashToken(token);
         var expires = DateTimeOffset.UtcNow.Add(options.SessionLifetime);
+        // Match DATETIME(6) so every Token login returns the original fixed expiry.
+        expires = new DateTimeOffset(expires.Ticks - expires.Ticks % 10, TimeSpan.Zero);
         await using var connection = await mysql.OpenAsync(cancellationToken);
         await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
         await using (var insert = new MySqlCommand("INSERT INTO players(external_provider, external_subject, display_name, home_realm_id, created_at) VALUES (@provider,@subject,@display,'home-default',UTC_TIMESTAMP(6)) ON DUPLICATE KEY UPDATE display_name=VALUES(display_name)", connection, transaction))

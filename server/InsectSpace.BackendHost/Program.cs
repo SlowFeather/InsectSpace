@@ -10,6 +10,8 @@ builder.Services.ConfigureHttpJsonOptions(settings => settings.SerializerOptions
 
 await using var runtime = await BackendRuntime.CreateAsync(options);
 builder.Services.AddSingleton(runtime);
+if (role == BackendServiceRole.World && Environment.GetEnvironmentVariable("INSECTSPACE_LOCAL_BACKEND") == "true")
+    builder.Services.AddHostedService<LocalWorldHeartbeat>();
 var app = builder.Build();
 
 app.MapGet("/", () => Results.Ok(new { service = role.ToString().ToLowerInvariant(), port = options.Port(role) }));
@@ -28,12 +30,19 @@ if (role is BackendServiceRole.Gateway or BackendServiceRole.Identity)
         => await ExecuteAsync(() => state.Identity.ResolveSessionAsync(request.Token, cancellationToken)));
     app.MapPost("/v1/identity/session/revoke", async (HttpRequest http, BackendRuntime state, CancellationToken cancellationToken)
         => await ExecuteAsync(async () => { await state.Identity.RevokeAsync(Bearer(http), cancellationToken); return new { revoked = true }; }));
+    app.MapPost("/v1/identity/session/login", async (HttpRequest http, BackendRuntime state, CancellationToken cancellationToken)
+        => await ExecuteAsync(async () => {
+            var session = await state.Identity.ResolveSessionAsync(Bearer(http), cancellationToken)
+                ?? throw new UnauthorizedAccessException("The session is invalid, expired, or revoked.");
+            return new SessionProfile(session.PlayerId, session.HomeRealmId, session.ExpiresAt);
+        }));
 }
 
 if (role is BackendServiceRole.Gateway or BackendServiceRole.Lobby or BackendServiceRole.World)
 {
-    app.MapPost("/v1/world/register", async (WorldRegistration request, BackendRuntime state, CancellationToken cancellationToken)
-        => await ExecuteAsync(() => state.Routing.RegisterWorldAsync(request, cancellationToken).ContinueWith(_ => request, cancellationToken)));
+    if (role == BackendServiceRole.World)
+        app.MapPost("/v1/world/register", async (HttpRequest http, WorldRegistration request, BackendRuntime state, CancellationToken cancellationToken)
+            => await ExecuteAsync(async () => { RequireService(http); await state.Routing.RegisterWorldAsync(request, cancellationToken); return request; }));
     app.MapPost("/v1/world/join", async (HttpRequest http, RouteRequest request, BackendRuntime state, CancellationToken cancellationToken)
         => await ExecuteAsync(async () => { RequireHomeRealm(http, request.PlayerId, request.HomeRealmId, state); return await state.Routing.JoinWorldAsync(request, cancellationToken); }));
     app.MapGet("/v1/world/route/{playerId:long}", async (HttpRequest http, long playerId, string homeRealmId, BackendRuntime state, CancellationToken cancellationToken)
@@ -100,4 +109,27 @@ static string Bearer(HttpRequest request)
     return token;
 }
 
+static void RequireService(HttpRequest request)
+{
+    var expected = Environment.GetEnvironmentVariable("INSECTSPACE_INTERNAL_SERVICE_KEY");
+    var actual = request.Headers["X-InsectSpace-Service-Key"].ToString();
+    if (string.IsNullOrEmpty(expected) || expected.Length < 32 ||
+        !System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(System.Text.Encoding.UTF8.GetBytes(expected), System.Text.Encoding.UTF8.GetBytes(actual)))
+        throw new UnauthorizedAccessException("Internal service authentication is required.");
+}
+
 public sealed record SessionTokenRequest(string Token);
+
+public sealed class LocalWorldHeartbeat(BackendRuntime runtime) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        // Explicit local topology fixture, not an AOI transport implementation.
+        var registration = new WorldRegistration("local-cluster", "local-1", "home", "127.0.0.1:19000", 100, 1);
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            await runtime.Routing.RegisterWorldAsync(registration, stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+        }
+    }
+}
