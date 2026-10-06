@@ -78,11 +78,7 @@ namespace InsectSpace.Client
             rect.anchoredPosition = position;
             rect.sizeDelta = size;
             var text = go.AddComponent<Text>();
-#if UNITY_2023_1_OR_NEWER
             text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-#else
-            text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-#endif
             text.fontSize = fontSize;
             text.color = Color.white;
             text.alignment = TextAnchor.UpperLeft;

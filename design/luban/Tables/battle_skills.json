@@ -1,0 +1,12 @@
+[
+  {
+    "id": "moon-blade",
+    "guId": 1001,
+    "name": "月刃",
+    "damage": 30,
+    "cooldownFrames": 60,
+    "resourceCost": 20,
+    "targetCount": 1,
+    "note": "月光蛊首技；单体伤害，可自动或手动释放"
+  }
+]

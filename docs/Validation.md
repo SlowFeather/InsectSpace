@@ -64,7 +64,7 @@ Unity 批量验证在 `.artifacts/unity/ValidationClient` 隔离副本执行；�
 | Unity 6.6 EditMode / PlayMode | **46/46、7/7** | `.artifacts/validation/unity6/EditMode.xml`、`PlayMode.xml` |
 | Unity CLI 实时控制 | 160 个命令可发现；执行 eval、打开 Bootstrap、Play、读状态、Stop 成功；最后 ready、非编译、已停止 Play | `.artifacts/validation/unity6/cli-tools.json`、`cli-live-play.json`、`cli-editor-status.json` |
 | Unity 6.6 WebGL Development Player | 构建成功，包含 Core 表与 WorldCommon 资源 | `.artifacts/validation/unity6/unity-Web.log`；输出 `.artifacts/unity6/WebDevelopment` |
-| Web 浏览器实际运行 | WASM HTTP 200；`FOUNDATION_READY modules=8 tables=2`、`WEB_DEVELOPMENT_READY modules=8 tables=2`；无 console error、JavaScript 异常或启动失败 | `.artifacts/validation/unity6/web-browser-result.json`、`web-browser-console.log` |
+| Web 浏览器实际运行 | WASM HTTP 200；`FOUNDATION_READY modules=8 tables=4`、`WEB_DEVELOPMENT_READY modules=8 tables=4`；无 console error、JavaScript 异常或启动失败 | `.artifacts/validation/unity6/web-browser-result.json`、`web-browser-console.log` |
 | Web 画面检查 | 960×600 canvas 中可见灰盒地面、3 个标记和 WorldCommon 胶囊角色，状态 Ready，无开发控制台红色错误 | `.artifacts/validation/unity6/web-development.png` |
 
 Unity 工程不含团结微信 SDK 及其条件测试，所以 EditMode 数量与团结不同。两边共享玩法、启动代码和表数据，但独立保存 Packages、ProjectSettings、引擎资产与 Library；团结验证副本会将 junction 展开成普通文件。
@@ -218,6 +218,206 @@ Demo 专项验证包括：模块拓扑/失败回滚；角色 Revision 与输入�
 
 **验证边界：**本次没有重新构建 Web、IL2CPP 或微信导出，也没有执行微信开发者工具、真机、在线后台、性能或发布验收。上述结果是本地回归，不能代替 GitHub Actions 结果或平台审批；SDK 兼容包、共享元数据、平台 Runtime/Editor 与工程设置仍需平台负责人评审后才能合并/发布。本机缓存、构建产物和 `doc/参考/`、`docs/参考/` 均不纳入本次提交。
 
+## 新手引导与第一章第一节细化（2026-10-02）
+
+新增 [第一章·第一节：把心交给希望](../design/narrative/Chapter01-Section01-Onboarding.md)：六段约 90 秒的人祖寓言分镜、八个生活／仪式场景、渐进 UI 教学、希望蛊群像、玩家控制前行与随机资质、登记和下一节交接。按用户新要求替换原稿的统一初始资质，同步剧情总纲、系统稿、内容入口与原著核对。保留原有 QM01-01／QM01-02 任务 ID，首节奖励示例为 55 元石，没有扩出重复领奖节点。
+
+本次实际重新执行 Foundation：**43/43 通过**，服务端 1 场景、20 空确定性帧，证据为 `.artifacts/validation/onboarding/foundation.log`。Architecture **通过**，成功工具输出记录在 `architecture-result.json`；该文件为本次输出的转录，不冒充额外测试。
+
+文档检查 **9/9 通过**：原参考哈希不变、八个场景、六段连续 90 秒分镜、资质概率合计 100% 且步数区间不重叠、首节奖励锚点、存档节点唯一、链接与编码、旧统一资质规则替换、二十四章与青茅二十个主线 ID 保持。证据为 `.artifacts/validation/onboarding/document-review.json`。这些检查仅针对文本结构、算术、来源与底座回归，不证明随机公平性、资质平衡、演出可读性或真实新手完成率。
+
+本次仅修改 Markdown 文档，**未运行 Unity EditMode／PlayMode**，没有新增脚本、场景、动画、语音、UI 资产、在线任务或随机服务。实际制作后的九项体验验收清单已列于细稿，均未宣称执行。资质概率、元海范围、改善路线、镜头时长与奖励数值是初测提案，不是已部署功能。
+
+## 人物、积云与迷雾画风研究（2026-10-02）
+
+交付 [人物、积云与迷雾研究](Hero-Cloud-Study.md)：Unity 6000.6.3f1 场景 `HeroCloudStudy.unity`，银发 Valerya 人物、Mixamo 自动绑定及 Breathing Idle、程序化草地、晴天/黄昏/夜晚/迷雾预设。原模型 CC BY 与 Mixamo 动画来源分别记录。没有修改受保护 SDK、shared、平台 Runtime/Editor 或项目渲染管线配置。
+
+用户反馈云边毛刺后，移除云轮廓高频噪声，重新生成轮廓距离图集；Shader 通过屏幕导数重建约一个像素宽的抗锯齿覆盖率。当前桌面预览使用无压缩三线性采样，不用模糊后处理掩盖轮廓。云图集内存成本增加，移动 ASTC 版本和真机性能未验收。
+
+本轮实际验证与本地证据位于 `.artifacts/validation/hero-cloud-study/`：
+
+| 检查 | 实际结果 | 证据 |
+| --- | --- | --- |
+| Foundation | 43/43；服务端 1 场景 / 20 确定性空帧 | `final-foundation.log` |
+| Architecture | SDK、12 个程序集、依赖方向及双引擎清单通过 | `final-architecture.log` |
+| Unity EditMode，云边修复后全量 | 46/46，无失败/跳过 | `EditMode.json` |
+| Unity PlayMode，云边修复后全量 | 29/29，无失败/跳过 | `PlayMode.json` |
+| FBX 显式重算法线后人物专项 | 4/4，7 个网格法线数量与顶点一致 | `Normals-PlayMode.json`；CLI 导入输出 |
+| 模型转换器 | `--mixamo` 连续执行两次成功；ZIP 为 1 OBJ + 1 MTL + 7 贴图，最终来源记录未覆盖 | 本次 CLI 执行输出 |
+| Shader 与最终状态 | 三个专用 Shader 无错误、诊断为空；Day/Q1、动画速度与 timeScale=1 | `final-live-audit.json` |
+| 画面核验 | 同机位/同姿态的 Day/Mist 三档截图、云边 200% 原像素对照、3 个相近云相位裁切 | `Day-Mist-Comparison.png`、`Cloud-Edge-Comparison.png`、`Cloud-Motion-Crops.png`；`Assets/Screenshots/HeroCloud_*` |
+
+保留首次 PlayMode 的 27/28 结果：新加的动画循环测试在 `.99` 时间设置后同步推进取样过早，读取到 `.99000001`。修复为先应用状态，再等待实际帧推进；没有跳过变形或循环断言。新增迷雾测试后顺序全量重跑为 29/29；初次失败证据 `Initial-PlayMode.json` 未覆盖。测试覆盖待机网格实际变形、根位置固定、循环、三档草量、预设切换以及雾在禁用/切场景时恢复。
+
+全局告警没有被描述成零：回归期间可见已有 CS0618、字体引用和资源服务退出告警。FBX 缺法线告警已改为显式 Calculate，两个本次 Shader 的混合行尾也已统一。曾有工具截图请求使用错误 source 参数，已改为 screen 并成功捕获，历史命令错误保留在 `final-console.json`。最后导入核验的 Console error 数为 0，仍可见已有代码的弃用 API 告警，见 `final-preview-console.json`。
+
+本轮未验证团结、WebGL/微信构建、移动 GPU 性能、真实在线场景或发布门禁。自动蒙皮只验待机，未证明头发/盔甲在战斗大幅动作下质量达标。迷雾是解析距离雾与地表颜色处理，不是体积雾。当前云边已清晰，草叶粗细、草带自然度和衣甲材质仍有后续美术精修空间。
+
+## 元石、仙元石与战斗储备通讯（2026-10-02）
+
+交付见 [经济通讯](Economy.md) 和 [ADR-0002](ADR-0002-Economy-Protocol.md)。使用 UnityCLI 连接 Unity **6000.6.3f1**，通过 Editor API 创建 `Assets/InsectSpace/Demos/LocalEconomy.unity`，实测 Unity 客户端与独立 .NET 服务器的 GF TCP 钱包/房间准入及真实 KCP 资源帧协议。源码与协议归业务模块；没有修改参考 GF 仓库、vendor、shared、平台 Runtime/Editor 或 asmdef。
+
+| 检查 | 最终实际结果 | 证据 |
+| --- | --- | --- |
+| Foundation 完整回归 | **56/56**，包含 13 项经济测试；服务端启动为 1 场景 / 20 确定性空帧 | `.artifacts/validation/economy/Foundation-Kcp-Final.json`；`tools/Test-Foundation.ps1` 输出 |
+| Architecture | SDK 校验、12 个程序集、依赖方向及双引擎配置通过 | `.artifacts/validation/economy/Architecture-Kcp-Final.txt` |
+| Unity CLI 编译 | 成功，KCP 客户端增量编译 0 error / 0 warning | `.artifacts/validation/economy/compile-kcp.json` |
+| Unity 全量 EditMode | **46/46**，无失败或跳过 | `.artifacts/validation/economy/Kcp-All-EditMode.json` |
+| Unity 全量 PlayMode | **37/37**，含 8 个经济测试；无失败或跳过 | `.artifacts/validation/economy/Kcp-All-PlayMode.json` |
+| 实际双进程 TCP/KCP 完整验收 | 十步全部通过，脚本退出码 0；Unity 发起托管、入场、施法、使用两种储备、断线恢复、撤离结算与世界消费 | `tools/Test-EconomyDemo.ps1`；`.artifacts/validation/economy/Kcp-Live-Final.log`、`kcp-live-*.json` |
+| 储备与钱包实值 | 钱包 (100,10) → 托管 (20,4)、钱包 (80,6) → 施法仙元 100→70 且储备不变 → 使用后储备 (19,3) → 结算钱包 (99,9) | `kcp-live-initial.json`、`reserved`、`cast`、`used-xian`、`settled` 对应文件 |
+| KCP 重连与状态校验 | 使用元石后断开 TCP/KCP，重新准入仍为原房间，仙元 80、储备 (19,4)，继续使用仙元石成功 | `kcp-live-reconnected.json`、`kcp-live-recovered.json`、`kcp-live-used-xian.json` |
+| TCP 大世界立即消费 | 结算后再消耗 3 元石，最终钱包 (96,9)、储备为零、仙元 100/100 | `kcp-live-world-debit.json` |
+| 界面与 Console | 已查看最终 KCP 界面截图，所有标签可辨认，下部操作通过原生滚动区域访问；最终快照 Ready=true、Error=null；记录时 Console 为 0 error / 3 warning | `Assets/Screenshots/Economy-Kcp-Final.png`；`Kcp-Console.json` |
+| 容量上限恢复与结算 | 缩小房间历史上限为 3，真实 TCP/KCP 连续重连填满准入记录；超限施法被拒，仍可恢复并撤离，完整返还未消费的 (20,4)，再开新房间仍拒绝 | `economy.kcp-capacity-preserves-recovery-and-settlement`，收录于最终 Foundation 结果 |
+
+测试包含：奖励/充值可信入口与去重、同一支付订单跨角色拒绝、并发防双花、计入托管后的溢出检查、请求序号和身份匹配、旧版本拒绝、超时后同操作号重试、真实 TCP/KCP 断线重连不自动退款、世界价格不可由客户端伪造、零储备开战且施法不扣钱包、重复房间/输入/结算防重入、缺帧等待、帧排序/hash 一致及非法帧整批不生效。容量修复仅修改服务端宿主和 .NET 测试，之后重跑 Foundation、Architecture 与真实 Unity 双进程验收；Unity 全量 46/37 是此前最终客户端源码的测试结果，没有将服务端检查冒充额外一轮 Unity 测试。所有数据只在内存，重启丢失。
+
+逐项完成核验：
+
+| 原始需求 | 实现及实际证据 |
+| --- | --- |
+| 元石通过活动/打怪获取 | 服务端 `GrantReward` 接受可信活动/怪物事件，幂等入账；客户端不能发奖。资格/概率服务尚未接入，控制台事件是明确的本地演示 |
+| 仙元石必须充值 | 活动/怪物入口只能发元石，仙元石由 `ApplyVerifiedRecharge` 入口发放；测试重复订单和跨角色复用拒绝，当前回执为模拟，未接真实支付 |
+| 两种石头可带入储备、剩余带出 | 原子托管、服务器房间绑定及按权威剩余量退款；实际 KCP 使用各一颗后钱包为 (99,9) |
+| 帧战斗主要消耗空窍仙元 | 普通施法 100→70，不改钱包或储备；零储备开战也已通过。显式消耗石头恢复仙元是本次实现约定 |
+| TCP 大世界消费实际扣除 | 服务器查价即时扣款，客户端不能报价；双进程验收从 (99,9) 扣至 (96,9)，Foundation 另验仙元石世界消费 |
+| 先数据结构与通讯，暂不接数据库 | 共享编译纯 C# 结构、2001/2002 版本化协议、真实 TCP/KCP；MySQL/Redis 无接入 |
+| UnityCLI 完成本地 Unity 6 工程 | CLI 创建原生场景、编译、完整 EditMode/PlayMode，并驱动实际客户端十步网络验收 |
+
+保留失败过程：TCP 首阶段的 .NET **51/52**，畸形包 `InvalidDataException` 未被过滤，补充异常过滤后通过；新增零储备/控制台测试后的首次 **52/53**，连接失败测试按固定步长计时，在实际墙钟超时前未积累够模拟秒数，改用真实经过时间驱动网络测试后达到 **53/53**（历史 `Foundation-Final.json`）。初次直接 Unity PlayMode 被既有 HeroCloudStudy Play 启动场景覆盖而未产生测试结果，已取消；随后全量测试本身通过，但旧临时测试场景恢复失败。恢复有效场景后首阶段顺序重跑为 EditMode 46/46、PlayMode 36/36 且脚本退出码 0；加入实际 KCP 客户端后完整重跑为上表 46/37。KCP 服务端曾因旧进程占用 DLL 构建失败，停止本任务的旧服务后重建成功。没有把未完成、恢复失败或测试失败写为通过。Pipeline 回调记录存在重复条目，计数使用 summary 和唯一 FullName。
+
+Console 历史缓冲仍保留此前人物展示任务的截图参数错误，未删除或掩盖；当前 groundTruth 为 0 error、3 warning，不描述为所有历史运行零警告。
+
+**范围边界：**充值种子和控制台充值均明确为 SIMULATED；生产支付验签、账号认证、MySQL/Redis、持久化账本、正式掉落概率、真实多人 AOI、伤害/胜负与完整战斗玩法未接入。当前是明确的本地单玩家 KCP 资源房间，资源帧由服务器 20 Hz 调度，客户端实际重放并验证；不依赖控制台伪造网络战斗，也不代表生产多人房间已完成。未执行团结/微信/WebGL 发布构建、原生热更回归或设备 QA，现有发布门禁仍适用。平台公共契约提取与发布评审尚未执行。
+
+## 转数与玩家随机资质（2026-10-02）
+
+交付见 [转数与资质](Cultivation.md) 与 [ADR-0003](ADR-0003-Cultivation-Protocol.md)。实际核对用户提供的 Bilibili 蛊修资料及既有新手策划；模型区分未开窍、一至五转四小阶、六至九转仙阶，客户端和服务器 Compile Link 同一纯 C# 协议。普通资质采用项目初测丁/丙/乙/甲 20/50/25/5 权重，由服务端事务内随机一次；概率不是参考文章的原著概率。
+
+通过 UnityCLI 在 Unity **6000.6.3f1** 内创建原生 `LocalCultivation.unity` 场景，使用真实 TCP 7779 的 2003 协议，复用本地角色身份。没有修改参考 GF 仓库、vendor、shared、平台 Runtime/Editor 或 asmdef。既有工作区的美术、剧情和设置差异未作为本次成长功能内容处理。
+
+| 检查 | 实际结果 | 证据（均在 `.artifacts/validation/cultivation/`，截图除外） |
+| --- | --- | --- |
+| .NET 服务端构建 | 成功，0 错误 / 0 警告 | 本次 `dotnet build` 输出；随后 Foundation 再构建并通过 |
+| Foundation | **63/63**，新增 7 项成长测试；既有经济与 KCP 回归保留 | `Foundation.log`、`Foundation.json` |
+| Architecture | SDK SHA、12 个程序集、依赖方向、模拟纯净与双引擎清单通过 | `Architecture.log` |
+| Unity CLI 编译 | 成功，记录的增量编译 0 error / 0 warning | `compile.json` |
+| Unity 全量 EditMode | **46/46**，无失败或跳过 | `EditMode.json` |
+| Unity 全量 PlayMode | **41/41**，新增 4 项成长测试，无失败或跳过；脚本正常恢复场景并退出 0 | `PlayMode.json`；`Test-ClientDemo.ps1` 输出 |
+| 真 Unity + 独立服务器晋升 | 从未开窍到九转，全部阶段/跨转门槛/九转上限通过；脚本退出 0 | `Live-Client.log`、`Live-Server.log`、`live-rank-*.json` |
+| 随机与重连 | 本次验收角色丙等、43% 元海、22 步，从一转到九转及重连保持；重复开窍明确拒绝 | `live-awakened.json`、`live-reroll-rejected.json`、`live-final-reconnect.json` |
+| 最终九转事实 | Rank=9、Stage=None、三个灾劫计数各为 3、主修道痕 300000、成尊证明齐备、经验余 64000；钱包仍为 (100,10) | `live-final-reconnect.json` |
+| 最终预览 | 正常本地服务另起进程，客户端 Ready、Error=null；新演示角色一转初阶、丙等、59%、22 步 | `Final-Preview.json`；`Assets/Screenshots/Cultivation-Final.png`，已实际查看 |
+| Console | 当前 groundTruth 为 0 error / 3 warning；历史缓冲未清除，不声称整个历史零错误 | `Console-Final.json` |
+
+Foundation 覆盖：全部 10000 个权重输入得到精确分档数量、百分比/步数边界、并发 32 次同一开窍只调用随机源三次（档位/步数/占比）、重复创建不重置、所有 24 个修炼状态的展示、丁等完整到九转、经验/证明不足不突破、299999 道痕不可成尊、请求/奖励事件去重、跨角色事件复用拒绝、溢出无部分入账、版本/畸形包拒绝、超时重试不重新抽样、真实 TCP 重连和 KCP 战斗期间拒绝突破。枚举遍历证明概率映射边界正确，不冒充生产随机分布或长期数值平衡的统计验收。
+
+`Test-CultivationDemo.ps1` 启动自己的临时内存服务器，客户端通过 UnityCLI 调用开窍/突破意图，服务器本地控制台发放明确的模拟经验与试炼证明；不在 Editor eval 中改服务器或客户端角色字段。验收结束关闭自己创建的进程并恢复原连接端口。最后重新启动普通本地服务，所以预览角色与临时验收角色的百分比不同；这属于已明确标注的进程重启清空，不是重连重抽。
+
+保留首次双进程脚本失败：一转中阶等待超时。原因是 PowerShell 函数参数 `$Stage` 与循环的 `$stage` 大小写不敏感且动态作用域重名，等待谓词拿到了阶段标签字符串；修正参数名为 `$Checkpoint` 后全流程通过。未改变服务器突破规则、跳过断言或把首次超时当作成功；首次产物保存在 `Initial-Live/`。本次修改后端/客户端的 Unity 和 .NET 回归均已通过，脚本修复后重跑的是完整双进程验收。
+
+**边界：**目前是转数/资质数据、可信判定入口与通讯闭环；真实账号、数据库、跨重启一次开窍、角色槽/删号重建账本、正式经验数值、花海演出、资质改善、实际升仙/灾劫关卡及其概率保底尚未接入。能量类型已识别，但未把新资质绑定到旧 KCP 资源样例的固定 100 点池；正式战斗数值仍需后续版本化接入。未执行团结、WebGL、微信构建或设备 QA，不替代平台发布门禁。
+
+
+## 2026-10-03：凡蛊组合与流派系统
+
+已在 Unity 6000.6.3f1 + .NET 10 本地项目执行。新增 Player/GuPaths 业务目录，未修改受保护的 vendor/shared/Runtime/Editor、asmdef 或参考 GF 工程。资料原文 SHA-256 验证未变。
+
+- `tools/Build-GuTables.ps1`：使用固定 Luban 4.5.0 生成，客户端/服务端两张 bytes 哈希一致。首批 43 条记录：一转 9、二转 7、三转 14、四转 7、五转 6；配置 42 个流派 ID，当前蛊虫主标签覆盖 12 个流派。来源与设计归类见 `docs/Gu-Catalog-Sources.md`。
+- 最终目录指纹：`e18ccf223ec7092f679773e27f8d42d7f79d41e94ebc9dd59f7af93ff00a5ad7`。修正一个原文异常章节标题，并将月霓裳/宝月光王、蓄力/惯力归入各自相同进阶系列后重新导表。
+- `tools/Test-Foundation.ps1`：最终 **71/71**，包含 8 项新增流派测试；服务端 bootstrap 输出 `SERVER_FOUNDATION_READY scenes=1 deterministicFrames=20`。覆盖可解释评分、精确并列、同系列重复、所有权/转数、原子拒绝、回执容量、并发幂等、目录版本、畸形包、客户端关联/原操作重试及真实 TCP/KCP 换装锁定。首次畸形包测试发现 `InvalidDataException` 捕获遗漏，已修复并全量重跑通过。
+- Unity CLI 编译成功。`tools/Test-ClientDemo.ps1 -Mode All -Filter InsectSpace.`：**EditMode 46/46，PlayMode 45/45**。之后只调整了来源文字、两组 family 配置与竖屏 UI；再执行相关 `InsectSpace.Tests.GuPathTests`：**4/4**。最新 `client-demo/PlayMode.json` 是这次四项定向回归，不冒充全量报告。
+- `tools/Test-Architecture.ps1`：最终通过（SDK 校验和、12 个程序集、依赖方向、确定性代码与双引擎配置）。`git diff --check` 通过。
+- `tools/Test-GuPathDemo.ps1`：最终目录上 **26 个实际 Unity/TCP 检查点通过**。临时 .NET 服务监听 17777–17780；验证未开窍拒绝、服务器开窍、一转月道成型、越阶拒绝、重连、真实 KCP 房间换装锁、离场后混修、按既有修炼规则突破到三转、同系列拒绝、力道成型和最终重连。钱包始终为 100 元石/10 仙元石。脚本只终止自身服务并恢复面板原端口。
+- 验收证据：`.artifacts/validation/gu-paths/live-*.json`、`Live-Server.log` 与 `Live-Server-errors.log`。`Assets/Screenshots/GuPaths-Final.png` 为 1080×2160 竖屏真实 Game 视图，已目视检查目录滚动、组合确认/草稿、来源文字均可读。
+- 最后 Unity Console ground truth：**0 errors / 0 warnings**，`compilationFailed=false`；Pipeline 保留缓冲区累计 68 warnings（没有清空历史来掩盖记录）。
+- 当前保留 `LocalGuPath` Play 演示与本地 7779 服务，一转固定开发角色已确认“月光蛊 + 小光蛊 → 月道成型”；`local-ready.json` 记录此状态。该进程与验收用临时三转角色互相独立。
+
+本次完成数据、所有权/组合校验、流派识别、客户端目录/草稿 UI 与网络闭环。没有实现各蛊的技能效果、杀招自动生成、境界/道痕成长、完整蛊虫实例背包、交易炼化、正式奖励、数据库、正式账号鉴权或微信真机网络；目录功能描述不能当成已实现战斗逻辑。已有经济/修炼协议回归通过，流派组合不会自动消费钱包或提升修为。正式发布仍需平台协议评审与 WeChat Release Gates。
+
+## 2026-10-03：蛊虫养炼配置与斜俯视移动增量
+
+本轮实际执行：
+
+- `tools/Test-WorkshopTableValidation.ps1`：10/10 通过，覆盖可变长度配方材料、空材料列表、字段错误、概率超限、未知蛊/食物、重复材料、数量上限、转数门槛和非整数价格；只使用 `.artifacts` 临时 fixture，未写入正式表。
+- `tools/Test-Foundation.ps1`：**80/80**，包含养炼购买、饥饿/休眠、单炼三分支、合炼三分支、并发/幂等、协议截断、客户端重连和真实 TCP/KCP 战斗锁测试。
+- `tools/Test-Architecture.ps1`：通过（SDK 校验和、依赖方向、确定性检查和双引擎配置）。
+- `unity recompile`：Unity **6000.6.3f1**，0 error / 0 warning。
+- `tools/Test-ClientDemo.ps1 -Mode All -Filter InsectSpace.`：EditMode **46/46**，PlayMode **49/49**；新增四项本地导航测试。
+- 通过 Unity CLI 重新创建 `Assets/InsectSpace/Demos/LocalWorldNavigation.unity`：真实 3D 几何、斜俯视相机、可运行 NavMesh、点击地面寻路、键盘/触控摇杆手动移动、任务/NPC 到达后停止；自动跑图与手动接管共用同一个本地移动组件。截图 `Assets/Screenshots/WorldNavigation-3D.png` 已目视检查。
+
+养炼四张正式表仍为空，运行时会明确阻止工作坊启动；待用户确认概率、饱食周期和首批路线后再填表和做正式联调。导航当前是明确标注的 LOCAL 原型，没有冒充在线 AOI、服务器移动权威或生产寻路。
+
+## 2026-10-03：斜俯视镜头与 NPC 养炼入口复核
+
+- Unity CLI 实测场景相机为透视投影、FOV 50°，旋转约 `(37.72, 319.09, 0)`；已查看 540×960 竖屏 Game 画面 `Assets/Screenshots/WorldNavigation-Portrait.png`，房屋侧面和地面纵深可见。之前 1280×720 截图把竖屏画面拉伸，不作为竖屏比例验收依据。
+- 地图靠近 NPC 后需手动交互打开养炼页，返回保持位置；面板显示时停止地图输入。新增一项入口测试，验证远距离拒绝、自动到达不创建工作坊、玩家点击才打开、返回保留位置。
+- `tools/Test-Foundation.ps1`：**81/81**，服务端 bootstrap 通过；包括空正式配置拒绝启动的回归。
+- `tools/Test-Architecture.ps1`：通过。Unity CLI 编译 **0 errors / 0 warnings**。
+- `tools/Test-ClientDemo.ps1 -Mode All -Filter InsectSpace.`：**EditMode 46/46，PlayMode 50/50**，脚本退出码 0。
+- 实际 CLI 驱动场景从出生点连续寻路到坊市，确认到达时工作坊尚未创建；显式交互打开第 0 页，空配置明确拒绝联网，关闭后位置不变。证据：`.artifacts/validation/world-workshop-entry/`；工作坊入口截图 `Assets/Screenshots/WorldNavigation-WorkshopEntry.png`。
+- 同一 Play 会话继续寻路到饲蛊师和炼蛊工坊，显式交互分别选中第 1、2 页；未提交购买、喂养或炼制。最终 Console ground truth 为 **0 errors / 3 warnings**，保留历史缓冲，不描述为全局零警告；见 `live-feeder.json`、`live-forge.json`、`console.json`。
+
+本轮四张正式表仍未启用，不声称已完成正式表下的 Unity/TCP 购买—养炼闭环；当前验证了镜头、导航、NPC 面板入口、空配置防误启用以及既有服务端 fixture 回归。未执行在线 AOI、微信或真机验收。
+
+## 2026-10-03：Unity 养炼 TCP/KCP 独立验收
+
+- `tools/Test-WorkshopTableValidation.ps1`：10/10 通过；`Test-WorkshopTables.ps1 -AllowUnconfigured` 与 `Build-WorkshopTables.ps1 -SchemaOnly` 通过，正式四表仍为空。
+- `tools/Test-WorkshopDemo.ps1` 使用 TEST ONLY 临时表和独立 .NET 宿主，通过 Unity CLI 创建测试探针，实测 **45 个检查点**全部通过：连接/开窍、购买三个独立实例、单炼成功/失败保留/失败毁蛊、合炼三结果、组合、饥饿休眠、补喂、重连、KCP 战斗锁和不确定请求重试。
+- 不确定炼制实测：服务端钱包从 67 扣至 66，重试返回原回执，随机调用从 10 增至 11；没有重复扣费或重新抽取。客户端/服务端临时 Luban bytes 哈希一致；脚本结束时正式 JSON、正式 bytes 哈希均未变化。证据：`.artifacts/validation/workshop-live/20261003-085441-630/summary.json` 与各检查点 JSON。
+- 该验收使用测试概率、10 秒饱食周期和合炼配方，全部标记为 TEST ONLY，不能当成正式游戏数值。
+
+截至本历史条目，当时基础回归为 Foundation **81/81**、Unity EditMode **46/46**、PlayMode **50/50**；后续正式表启用和当前回归见下方 2026-10-04 条目。
+
+## 2026-10-04：世界遭遇与月光蛊首期战斗
+
+本轮完成并复核世界地图遭遇入口：竖屏 3D 斜俯视地图支持 NPC 自动寻路、点击地面移动、键盘/触屏摇杆接管；靠近野怪遭遇点后必须由玩家点击进入独立 `LocalMoonlightBattle` 场景。战斗为 1 名主角对 1 只野怪，自动普攻与配置化野怪普通攻击并行，月光蛊首技“月刃”支持手动和自动释放，胜负或撤退返回世界地图。
+
+规则和技能来自 Luban 配置：`design/luban/Tables/battle_rules.json`、`battle_skills.json`；权威整数帧模拟位于 `shared/com.insectspace.simulation/Runtime/MoonlightBattle.cs`，本地 TCP/KCP 房间宿主位于 `server/InsectSpace.Server/Economy/LocalMoonlightBattleHost.cs`。本地服务器使用内存数据，明确标记为 LOCAL；未实现 PvP 帧同步、在线 AOI、账号鉴权或持久化数据库。
+
+| 检查 | 实际结果 | 证据 |
+| --- | --- | --- |
+| Foundation | **85/85**，含月光蛊确定性、非法帧/哈希原子校验、TCP/KCP 入场、输入、撤退和养炼回归；服务端启动校验通过 | `tools/Test-Foundation.ps1` 输出 |
+| Architecture | 通过，SDK 校验、12 个程序集、依赖方向、确定性模拟和双引擎配置通过 | `tools/Test-Architecture.ps1` 输出 |
+| Unity 6 编译 | **0 errors / 0 warnings**；Unity **6000.6.3f1** | `unity recompile` 输出 |
+| Unity PlayMode | **50/50**，包含世界导航、NPC 显式交互和遭遇入口测试；脚本退出码 0，测试结果状态为 completed | `.artifacts/validation/client-demo/PlayMode.json`、Unity `test_status` |
+| 代码格式检查 | `git diff --check` 通过 | `git diff --check` 输出 |
+
+此前测试器收尾阶段曾引用已删除的临时 `InitTestScene`；`tools/Test-ClientDemo.ps1` 已增加不存在场景过滤和正式世界场景回退，修复后全量 PlayMode 50/50 正常退出并恢复到 `LocalWorldNavigation`。该历史验证发生在正式表启用前；当前正式表状态见下方 2026-10-04 条目。
+
+## 2026-10-04：正式养炼原型表与当前 Unity 回归
+
+本节更新上文“正式养炼表仍为空”的历史状态；相关 2026-10-03 记录反映当时配置，不再代表当前仓库。
+
+- `tools/Test-WorkshopTables.ps1` 通过，当前四表包含 `care=3`、`offers=4`、`recipes=1`；物品表配置月兰花瓣和月华石。
+- `tools/Build-WorkshopTables.ps1` 使用 Luban 4.5.0 实际生成客户端与服务端代码/数据，双方养炼表 bytes 哈希一致。
+- `tools/Run-LocalServer.ps1 -LocalWorkshop -TcpPort 17877 -EconomyPort 17879 -EconomyBattlePort 17880` 启动通过。工作坊宿主在启动时装载了正式蛊目录和生成的四张养炼表；服务端仍使用内存存档，重启会清空。
+- Unity CLI 打开 `LocalWorkshop` 并运行时，客户端报告 `ready=True`、`connected=True`、`服务器已确认`，读到 `items=2, offers=4, care=3, recipes=1`；验证后已停止该 Play 会话与临时服务器。
+- `tools/Test-Foundation.ps1`：**85/85**；`tools/Test-Architecture.ps1`：通过。
+- `tools/Test-ClientDemo.ps1 -Mode All -Filter InsectSpace.`：Unity 6 EditMode **46/46**、PlayMode **50/50**。
+- 以上表内的商店价格、300 秒饱食时长、单炼/合炼成功率和毁蛊率，是内部原型默认值，便于玩法和网络联调，不是用户确认的最终平衡参数。`tools/Test-WorkshopDemo.ps1` 仍使用 TEST ONLY 临时表，其覆盖结果不作为正式数值验收。
+
+本节没有验证微信传输、生产账号/存档、真实 AOI 或 PvP 帧同步。
+
+## 2026-10-05：WSL2 后端基础骨架与手机号白名单
+
+本轮在本机 WSL2 `Ubuntu-24.04` 原生安装并启动 Redis 7 与 MySQL 8，Windows 侧仅运行 .NET 宿主进程；数据库和缓存连接通过 WSL2 地址访问。密码、会话签名密钥和白名单只写入被 `.gitignore` 忽略的 `.artifacts/validation/backend/wsl.env`，仓库没有测试凭据或手机号名单。
+
+| 检查 | 实际结果 | 证据 |
+| --- | --- | --- |
+| 后端库/六角色宿主编译 | 通过，0 错误 / 0 警告 | `dotnet build server/InsectSpace.BackendHost/InsectSpace.BackendHost.csproj` |
+| WSL2 基础设施 | 通过，原生 MySQL/Redis 服务可连接，迁移成功 | `tools/Initialize-WSLBackend.ps1` |
+| 六进程健康检查 | 通过，Gateway、Identity、Lobby、World、Battle、Worker | `tools/Test-Backend.ps1` |
+| 手机白名单登录 | 通过，白名单号码不需要验证码，空验证码直接创建会话 | `.artifacts/validation/backend/test-result.json` |
+| 非白名单手机号 | 通过，测试模式 OTP 生成、校验和一次性消费 | `.artifacts/validation/backend/test-result.json` |
+| 世界路由/跨服房间 | 通过，会话主域校验、路由 epoch、房间复用 | `.artifacts/validation/backend/test-result.json` |
+| 领域命令 | 通过，MySQL durable inbox 与 Redis 幂等缓存 | `.artifacts/validation/backend/test-result.json` |
+| Foundation 回归 | **85/85** | `tools/Test-Foundation.ps1` |
+| 架构门禁 | 通过 | `tools/Test-Architecture.ps1` |
+
+当前身份实现仍使用可替换 `IIdentityProvider` 和 `IPhoneCodeSender`；真实短信供应商、微信登录、正式业务结算规则和生产 CDN 未配置，也未据此声称通过生产或真机门禁。白名单由 `INSECTSPACE_PHONE_WHITELIST` 的 E.164 逗号/分号分隔值提供，空配置默认关闭直登。
+
 ## 2026-10-05：WSL 原生六进程与 30 天 Token 客户端闭环
 
 本条更新前述 Windows 宿主状态：六角色现均在 WSL2 原生 Linux 进程运行，MySQL/Redis 仅绑定本机。新增默认固定 30 天、可配置时长的 Token；Windows DPAPI 本机缓存、启动恢复、不续期、撤销/过期拒绝。白名单与密钥仅存在忽略配置。真实短信供应商按用户决定留空。
@@ -242,3 +442,14 @@ Demo 专项验证包括：模块拓扑/失败回滚；角色 Revision 与输入�
 原生验证先后因缺少 IL2CPP 模块、导出 Visual Studio solution 设置与旧导出目录冲突失败；用户批准官方安装后，锁定可执行 Player 输出并隔离旧产物后通过。冷缓存首次移除内置目录导致缺少 BuiltinCatalog，改为空清单后通过，测试后恢复内置资源与缓存。无图形 PlayMode 曾因 RenderTexture.Create 失败得到 33/55，改用真实图形编辑器复验 55/55，没有屏蔽失败。团结编码的共享脚本 GUID 通过既有 ExportGuids / Convert-PortableMetadata 工具兼容转换后，Unity 编译恢复。
 
 测试针对当前工作树，包含用户尚未提交的四表、玩法及渲染内容；本轮提交仅包含后端客户端/资源验证相关增量，不接管其他改动。Runtime/Editor 变更的核心平台/服务端正式评审仍待完成。本阶段交付骨架、契约及本地闭环，正式经济/任务/活动结算、多人 AOI/PvP、生产运维、真实短信、微信网络/安全存储与真机发布未验收。启动与复验命令见 [Backend-Validation.md](Backend-Validation.md)。
+
+## 2026-10-06：资产清理与双引擎兼容复验
+
+本轮移除了 `client/unity/InsectSpaceClient/Assets/Screenshots/` 中已确认没有被场景、预制体或测试引用的中间截图及对应 `.meta` 文件；保留正式功能验收截图、Unity 6 工程和团结工程。没有修改 `vendor/` 或 `shared/`；Runtime 启动覆盖层只做了团结字体兼容修复，平台归属评审仍适用。
+
+- `tools/Test-Foundation.ps1`：**85/85**，服务端启动检查通过。
+- `tools/Test-Architecture.ps1`：通过；`tools/Test-ClientEnvironment.ps1`：通过，Unity **6000.6.3f1** 与团结 **2022.3.62t16** 的工程隔离、SDK 校验和共享链接检查通过。
+- 团结 EditMode：**62/62**；团结图形 PlayMode：**42/42**，运行于隔离验证工程和实际图形设备。
+- 为兼容团结运行时，启动覆盖层和后端大厅面板统一使用 `LegacyRuntime.ttf`；团结无图形 PlayMode 的 `DrawBuffers`/NavMesh 报错属于引擎无图形限制，不作为业务通过依据。
+
+本轮未改变正式项目入口、服务器路由或资源回退策略。真实微信传输、生产账号、在线 AOI/PvP 和真机发布仍需按 [WeChat-Release-Gates.md](WeChat-Release-Gates.md) 完成平台验收。

@@ -20,11 +20,20 @@ $restore = @'
 var value = UnityEditor.SessionState.GetString("InsectSpace.Demo.TestScenes", "");
 if (!string.IsNullOrEmpty(value)) {
     var setup = Newtonsoft.Json.JsonConvert.DeserializeObject<UnityEditor.SceneManagement.SceneSetup[]>(value);
-    UnityEditor.SceneManagement.EditorSceneManager.RestoreSceneManagerSetup(setup);
+    var valid = new System.Collections.Generic.List<UnityEditor.SceneManagement.SceneSetup>();
+    foreach (var item in setup)
+        if (!string.IsNullOrEmpty(item.path) && System.IO.File.Exists(System.IO.Path.Combine(System.IO.Directory.GetParent(UnityEngine.Application.dataPath).FullName, item.path)))
+            valid.Add(item);
+    if (valid.Count > 0)
+        UnityEditor.SceneManagement.EditorSceneManager.RestoreSceneManagerSetup(valid.ToArray());
+    else
+        UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/InsectSpace/Demos/LocalWorldNavigation.unity", UnityEditor.SceneManagement.OpenSceneMode.Single);
     UnityEditor.SessionState.EraseString("InsectSpace.Demo.TestScenes");
 }
 var path = UnityEditor.SessionState.GetString("InsectSpace.Demo.TestPlayScene", "");
-UnityEditor.SceneManagement.EditorSceneManager.playModeStartScene = string.IsNullOrEmpty(path) ? null : UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEditor.SceneAsset>(path);
+UnityEditor.SceneManagement.EditorSceneManager.playModeStartScene = !string.IsNullOrEmpty(path) && System.IO.File.Exists(System.IO.Path.Combine(System.IO.Directory.GetParent(UnityEngine.Application.dataPath).FullName, path))
+    ? UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEditor.SceneAsset>(path)
+    : UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEditor.SceneAsset>("Assets/InsectSpace/Demos/LocalWorldNavigation.unity");
 UnityEditor.SessionState.EraseString("InsectSpace.Demo.TestPlayScene");
 return "Restored scenes and Play Mode start setting";
 '@

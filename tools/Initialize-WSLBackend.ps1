@@ -36,7 +36,10 @@ function Invoke-WslRoot([string]$commandText) {
     if ($LASTEXITCODE -ne 0) {
         throw "WSL infrastructure command failed ($LASTEXITCODE); inspect the local infrastructure services."
     }
-    return ($output -join [Environment]::NewLine)
+    # Windows PowerShell can surface WSL's UTF-16 console output with embedded
+    # NUL characters. Normalize the captured text before parsing addresses or
+    # passing connection details to the local validation host.
+    return (($output -join [Environment]::NewLine) -replace "`0", '').Trim()
 }
 
 $setup = @'
@@ -77,7 +80,9 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'WSL infrastructure setup failed.' }
 } finally { Remove-Item -LiteralPath $setupPath -Force -ErrorAction SilentlyContinue }
 
-$wslAddress = (Invoke-WslRoot "hostname -I | cut -d' ' -f1").Trim()
+$wslAddressOutput = Invoke-WslRoot "hostname -I | cut -d' ' -f1"
+$wslAddressMatch = [regex]::Match($wslAddressOutput, '(?<!\d)(?:\d{1,3}\.){3}\d{1,3}(?!\d)')
+$wslAddress = $wslAddressMatch.Value
 if ($wslAddress -notmatch '^[0-9]+(\.[0-9]+){3}$') { throw 'Could not determine the WSL2 IPv4 address.' }
 $sessionKey = if ($existing['INSECTSPACE_SESSION_SIGNING_KEY']) { $existing['INSECTSPACE_SESSION_SIGNING_KEY'] } else { [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32)) }
 $serviceKey = if ($existing['INSECTSPACE_INTERNAL_SERVICE_KEY']) { $existing['INSECTSPACE_INTERNAL_SERVICE_KEY'] } else { [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32)) }

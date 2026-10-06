@@ -299,11 +299,7 @@ namespace InsectSpace.Gameplay.Modules
             var go = new GameObject("Text"); go.transform.SetParent(parent, false);
             var rect = go.AddComponent<RectTransform>(); rect.anchorMin = new Vector2(0f, 1f); rect.anchorMax = new Vector2(0f, 1f); rect.pivot = new Vector2(0f, 1f); rect.anchoredPosition = position; rect.sizeDelta = dimensions;
             var text = go.AddComponent<Text>(); text.text = value;
-#if UNITY_2023_1_OR_NEWER
             text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-#else
-            text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-#endif
             text.fontSize = size; text.alignment = anchor; text.color = Color.white; text.horizontalOverflow = HorizontalWrapMode.Wrap; text.verticalOverflow = VerticalWrapMode.Overflow; return text;
         }
 

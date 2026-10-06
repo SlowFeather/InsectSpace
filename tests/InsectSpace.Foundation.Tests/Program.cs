@@ -11,6 +11,12 @@ using InsectSpace.Gameplay.Modules;
 using InsectSpace.Network;
 using InsectSpace.Simulation;
 
+if (args.Length > 0 && args[0] == "--workshop-acceptance-host")
+{
+    WorkshopAcceptanceHost.Run(args.Skip(1).ToArray());
+    return 0;
+}
+
 var results = new List<object>();
 int failures = 0;
 Run("modules.sort-and-reverse-shutdown", () =>
@@ -203,6 +209,11 @@ Run("network.sdk-datagram-kcp-reject-invalid-ticket", () => TransportRoundtrip(t
 Run("network.sdk-datagram-kcp-admission-and-limits", DatagramTransportTests.AdmissionAndLimits);
 Run("network.kcp-reject-invalid-ticket", () => TransportRoundtrip(true, false));
 foreach (var test in SessionConnectionTests.Cases()) Run(test.Name, test.Run);
+foreach (var test in EconomyTests.Cases()) Run(test.Name, test.Run);
+foreach (var test in CultivationTests.Cases()) Run(test.Name, test.Run);
+foreach (var test in GuPathTests.Cases()) Run(test.Name, test.Run);
+foreach (var test in WorkshopTests.Cases()) Run(test.Name, test.Run);
+foreach (var test in MoonlightTests.Cases()) Run(test.Name, test.Run);
 
 Directory.CreateDirectory(".artifacts/validation");
 File.WriteAllText(".artifacts/validation/foundation-tests.json",

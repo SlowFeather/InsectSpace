@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1001,
+    "food": 30001,
+    "foodCount": 1,
+    "fedSeconds": 300,
+    "refineFee": 5,
+    "success": 8000,
+    "destroy": 1000,
+    "note": "月光蛊；内部原型默认值，可调整"
+  },
+  {
+    "id": 1002,
+    "food": 30001,
+    "foodCount": 1,
+    "fedSeconds": 300,
+    "refineFee": 5,
+    "success": 8000,
+    "destroy": 1000,
+    "note": "小光蛊；内部原型默认值，可调整"
+  },
+  {
+    "id": 2001,
+    "food": 30001,
+    "foodCount": 1,
+    "fedSeconds": 300,
+    "refineFee": 5,
+    "success": 8000,
+    "destroy": 1000,
+    "note": "月芒蛊；内部原型默认值，可调整"
+  }
+]

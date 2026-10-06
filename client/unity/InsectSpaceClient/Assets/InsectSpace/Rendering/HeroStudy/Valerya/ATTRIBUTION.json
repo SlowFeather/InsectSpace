@@ -1,0 +1,29 @@
+{
+  "title": "Valerya - Fantasy Queen | Stylized 3D Character",
+  "author": "agra_aoe (AoG.01)",
+  "source": "https://sketchfab.com/3d-models/valerya-fantasy-queen-stylized-3d-character-271fa806eeac44d5a0c03101d7ce2096",
+  "license": "CC BY 4.0 (original character mesh and textures only)",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "download_date": "2026-10-02",
+  "source_sha256": "d935cf341d451bb58682e3d5101ab58a3337b294680ca2af87e7a62548069052",
+  "triangles": 54074,
+  "original_vertices": 43720,
+  "source_has_rig": false,
+  "modifications": "Unmodified source T-pose converted from GLB to OBJ for Mixamo automatic rigging; Mixamo humanoid skin imported as FBX; custom painterly lighting and shader-based red-to-navy armor recoloring. The earlier relaxed static OBJ is not used by the final scene.",
+  "rig_and_animation": {
+    "provider": "Adobe Mixamo",
+    "source": "https://www.mixamo.com/",
+    "terms_reference": "https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html",
+    "license_scope": "Rigging service and animation are provided under applicable Adobe/Mixamo terms; they are not relicensed here as CC BY.",
+    "download_date": "2026-10-02",
+    "rig_option": "Standard skeleton (65 bones option)",
+    "clip": "Breathing Idle",
+    "format": "FBX Binary, With Skin, 30 fps",
+    "file": "Valerya_BreathingIdle.fbx",
+    "sha256": "5a5080648104b4833907bfff5c964e91e53f48813f994be911eec8a1967941e7",
+    "unity_import": "Humanoid, globalScale 100, calculated normals (100 degree smoothing), loopTime and loopPose; no root motion",
+    "imported_clip_seconds": 9.933333,
+    "skinned_renderers": 7
+  },
+  "limitations": "Local presentation study. Humanoid validity, idle skin deformation, stationary root and looping tested. Automatic hair/armor weights have not been validated for combat or extreme poses; no facial rig or production deformation claim. Original author discloses AI-assisted workflow."
+}

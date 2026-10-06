@@ -55,7 +55,7 @@ namespace InsectSpace.Client
                 yield return null;
             }
             for (int i = 0; i < 20 && bootstrap != null && bootstrap.Ready; i++) yield return null;
-            if (bootstrap == null || !bootstrap.Ready || bootstrap.ModuleCount != 8 || bootstrap.TableCount != 2 ||
+            if (bootstrap == null || !bootstrap.Ready || bootstrap.ModuleCount != 8 || bootstrap.TableCount != 4 ||
                 bootstrap.Context.Configuration.editorSimulate || bootstrap.Context.Configuration.localSmokeMode ||
                 bootstrap.Context.Session.Phase != SessionPhase.SignedOut)
             {
@@ -90,7 +90,7 @@ namespace InsectSpace.Client
             if (unload.Status != EOperationStatus.Succeeded || loaded.isLoaded || scene.IsValid)
                 throw new InvalidOperationException("Content scene did not unload and release its handle.");
             Debug.Log("[InsectSpace] CONTENT_LIFECYCLE_PASSED prefab=WorldActor scene=WorldSandbox");
-            Debug.Log("[InsectSpace] NATIVE_VALIDATION_PASSED modules=8 tables=2 session=SignedOut");
+            Debug.Log("[InsectSpace] NATIVE_VALIDATION_PASSED modules=8 tables=4 session=SignedOut");
             Application.Quit(0);
         }
     }

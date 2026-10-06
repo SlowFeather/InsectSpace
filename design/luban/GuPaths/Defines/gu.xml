@@ -1,0 +1,11 @@
+<module name="">
+  <bean name="PathDefinition"><var name="id" type="int"/><var name="name" type="string"/><var name="note" type="string"/></bean>
+  <table name="TbPath" value="PathDefinition" input="*@paths.json" index="id"/>
+  <bean name="GuDefinition">
+    <var name="id" type="int"/><var name="family" type="string"/><var name="name" type="string"/>
+    <var name="rank" type="int"/><var name="path" type="int"/><var name="supportPath" type="int"/>
+    <var name="roles" type="int"/><var name="effect" type="string"/><var name="source" type="string"/>
+    <var name="pathBasis" type="string"/>
+  </bean>
+  <table name="TbGu" value="GuDefinition" input="*@gu.json" index="id"/>
+</module>

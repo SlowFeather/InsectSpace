@@ -6,6 +6,14 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Player/GuWorkshop/WorkshopClient.cs" Link="WorkshopClient.cs" />
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Player/GuPaths/GuPathClient.cs" Link="GuPathClient.cs" />
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Player/Cultivation/CultivationClient.cs" Link="CultivationClient.cs" />
+    <ProjectReference Include="../../server/InsectSpace.Server/InsectSpace.Server.csproj" />
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Player/Economy/EconomyClient.cs" Link="EconomyClient.cs" />
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Player/Economy/LocalEconomyTcpClient.cs" Link="LocalEconomyTcpClient.cs" />
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Player/Economy/LocalEconomyBattleClient.cs" Link="LocalEconomyBattleClient.cs" />
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Player/Economy/LocalMoonlightBattleClient.cs" Link="LocalMoonlightBattleClient.cs" />
     <ProjectReference Include="../../shared/com.insectspace.foundation/InsectSpace.Foundation.csproj" />
     <ProjectReference Include="../../shared/com.insectspace.simulation/InsectSpace.Simulation.csproj" />
     <ProjectReference Include="../../shared/com.insectspace.network/InsectSpace.Network.csproj" />

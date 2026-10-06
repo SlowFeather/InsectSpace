@@ -52,7 +52,7 @@ namespace InsectSpace.Tests
                 Assert.IsNull(bootstrap.LastError);
                 Assert.IsTrue(bootstrap.Ready, bootstrap.Stage);
                 Assert.AreEqual(8, bootstrap.ModuleCount);
-                Assert.AreEqual(2, bootstrap.TableCount);
+                Assert.AreEqual(4, bootstrap.TableCount);
                 Assert.NotNull(bootstrap.Context.Connections);
                 Assert.IsFalse(bootstrap.Context.Connections.LobbyAuthenticated,
                     "Local smoke must not pretend to have an authenticated TCP session.");

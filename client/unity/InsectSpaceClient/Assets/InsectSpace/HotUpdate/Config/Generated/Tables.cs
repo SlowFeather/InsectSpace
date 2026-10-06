@@ -13,11 +13,15 @@ namespace InsectSpace.Config
 {
 public partial class Tables
 {
+    public TbBattleRule TbBattleRule {get; }
+    public TbBattleSkill TbBattleSkill {get; }
     public TbWorldScene TbWorldScene {get; }
     public TbQualityProfile TbQualityProfile {get; }
 
     public Tables(System.Func<string, ByteBuf> loader)
     {
+        TbBattleRule = new TbBattleRule(loader("tbbattlerule"));
+        TbBattleSkill = new TbBattleSkill(loader("tbbattleskill"));
         TbWorldScene = new TbWorldScene(loader("tbworldscene"));
         TbQualityProfile = new TbQualityProfile(loader("tbqualityprofile"));
         ResolveRef();
@@ -25,6 +29,8 @@ public partial class Tables
     
     private void ResolveRef()
     {
+        TbBattleRule.ResolveRef(this);
+        TbBattleSkill.ResolveRef(this);
         TbWorldScene.ResolveRef(this);
         TbQualityProfile.ResolveRef(this);
     }

@@ -7,6 +7,16 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Player/GuWorkshop/Protocol/*.cs" Link="GuWorkshop/Protocol/%(Filename)%(Extension)" />
+    <Compile Include="../Generated/GuWorkshop/*.cs" Link="GuWorkshop/Generated/%(Filename)%(Extension)" />
+    <None Include="../Generated/Data/GuWorkshop/*.bytes" Link="Data/GuWorkshop/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Player/GuPaths/Protocol/*.cs" Link="GuPaths/Protocol/%(Filename)%(Extension)" />
+    <Compile Include="../Generated/GuPaths/*.cs" Link="GuPaths/Generated/%(Filename)%(Extension)" />
+    <None Include="../Generated/Data/GuPaths/*.bytes" Link="Data/GuPaths/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Player/Cultivation/Protocol/*.cs" Link="Cultivation/Protocol/%(Filename)%(Extension)" />
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Player/Economy/Protocol/*.cs" Link="Economy/Protocol/%(Filename)%(Extension)" />
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Battle/Economy/*.cs" Link="Economy/Battle/%(Filename)%(Extension)" />
+    <Compile Include="../../client/unity/InsectSpaceClient/Assets/InsectSpace/HotUpdate/Modules/Battle/Moonlight/MoonlightBattlePacket.cs" Link="Moonlight/MoonlightBattlePacket.cs" />
     <ProjectReference Include="../../shared/com.insectspace.foundation/InsectSpace.Foundation.csproj" />
     <ProjectReference Include="../../shared/com.insectspace.simulation/InsectSpace.Simulation.csproj" />
     <ProjectReference Include="../../shared/com.insectspace.network/InsectSpace.Network.csproj" />

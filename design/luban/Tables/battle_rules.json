@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "playerMaxHp": 100,
+    "monsterMaxHp": 100,
+    "autoAttackDamage": 5,
+    "autoAttackIntervalFrames": 20,
+    "monsterAttackDamage": 4,
+    "monsterAttackIntervalFrames": 30,
+    "maxResource": 100,
+    "resourceRegenPerFrame": 1
+  }
+]
