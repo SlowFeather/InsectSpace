@@ -1,6 +1,6 @@
 # 后端与本地客户端验收
 
-日期：2026-10-05。当前状态取代此前 Windows .NET 宿主方案：**MySQL、Redis、六个宿主均在 WSL2 Ubuntu-24.04 原生运行**。Windows 仅负责 Unity 客户端、构建和脚本。范围见 [Backend-Requirements.md](Backend-Requirements.md)。
+日期：2026-10-06。当前状态取代此前 Windows .NET 宿主方案：**MySQL、Redis、六个宿主均在 WSL2 Ubuntu-24.04 原生运行**。Windows 仅负责 Unity 客户端、构建和脚本。范围见 [Backend-Requirements.md](Backend-Requirements.md)。当前交付摘要见 [工程状态](Project-Status.md)。
 
 ## 启动
 
