@@ -598,3 +598,17 @@ VT 仍只有 **38 个可用页面 / 13 个缺失 bundle**，缺失 `LDRes/prgrou
 - Foundation **85/85**、`SERVER_FOUNDATION_READY scenes=1 deterministicFrames=20`；Architecture 通过。Unity HeroCloudStudy PlayMode **5/5**，无失败/跳过；水 Shader 编译诊断为空。新专项探针不计作 Test Runner 用例。
 
 证据目录 `.artifacts/validation/afk-recovered/2026-10-09/shore-waves/`：`rebuild.json`、`verification.json`、`shore-waves-probe.json`、`Day-Waves.png`、`Night-Waves.png`、`Phases.jpg`、`Shore-Waves.gif`、Foundation/Architecture/Unity 日志与 PlayMode 报告。小精灵隐藏功能保留；未改平台目录、项目管线或正式发布资产，未执行移动/微信发布验收。
+
+## 2026-10-10：向岸波纹与浅岸轻微起伏
+
+根据用户纠正与 MuMu 实时游戏录屏，本条修正上一条的传播方向：细波带由湖内向岸边移动，到岸逐渐消隐。通过 UnityCLI 在 Unity **6000.6.3f1** 中重建默认湖岸，仍为 **1,045 renderers**。原游戏参考为 `.artifacts/reference/afk-journey/mumu-oct10-water-live.png`、`mumu-oct10-water-live.mp4` 和相位合图；截图为白天，录屏为夜间。
+
+- 水 Shader 相位由减去时间项改为加上时间项，同一道波峰的岸线距离随时间减小。速度 **0.4 m/s**、间距 **0.8 m**、周期 **2 s**；波带宽度由 0.065 调为 **0.045 m**，范围由 2 调为 **1.8 m**，强度由 0.75 调为 **0.6**，匹配较细、较弱的参考水纹。
+- 浅岸顶点真实起伏与接触线进退共用波场，默认高度幅度 **0.009 m**、水线幅度 **0.035 m**，沿岸错相并在距岸 1.2 m 内衰减。法线、高光和反射随之变化；FullMap 未启用局部柔岸的分支保持位移关闭。
+- `VerifyAfkShoreWaves.Run` 成功、内部 diagnostics 为空。浮点 GPU 样点在 0.8 / 1.4 / 2.8 秒测得波峰距岸 **0.453011 / 0.218399 / 0.453011 m**，0.6 秒内向岸移动 **0.234613 m**，目标为 0.24 m；远处 mask 为 **0**，2 秒周期误差 **2.71e−6**。高度峰峰值 **0.015527 m**、水线偏移峰峰值 **0.060651 m**、深水位移 **0**，起伏周期误差 **1.20e−7**。
+- 960×540 近景的波带 A/B 变化 **8,511** 像素，起伏 A/B **3,257** 像素。保存并目视检查昼夜近景、相位图和 **40 帧 / 4 秒**动图；录帧结束恢复 `_StudyShoreWaveTime=-1`。Day/Night/Dawn/Dusk × 1600×900 / 1080×1920 八图通过横竖屏合图目视检查。
+- `VerifyAfkAdvanced.RunShoreWaves` 与 `VerifyAfkWaterFairy.RunShoreWaves` 均成功、内部 diagnostics 为空。水底深度 **0.681758 / 0.677005 / 0.688754 m**，反射开关前后相同；镜像位置 **810** 个标记像素。云影、体积雾和角色 SDF/透射/IBL/深度轮廓保持实际像素变化，重复帧噪声 **0**；午夜连续、晨昏精灵光强 **8/4/0**。精灵关闭在五个时间点及跨午夜保持 visual/light disabled，重新显示成功。
+- 实际执行 `tools/Test-Foundation.ps1`：**85/85**，`SERVER_FOUNDATION_READY scenes=1 deterministicFrames=20`；`tools/Test-Architecture.ps1`：通过。`tools/Test-ClientDemo.ps1 -Mode PlayMode -Filter InsectSpace.Tests.HeroCloudStudyTests`：**5/5**，failed/skipped/inconclusive 均为 0。专项 GPU 探针不计入 Test Runner 数量。
+- 最终 `unity recompile` 为 up_to_date、**0 errors / 0 warnings**；水 Shader supported=true、hasError=false、diagnostics 为空。用 Editor API 保存默认场景为 **Day、Cycle=true、240 秒、小精灵隐藏、scene dirty=false**，水诊断视图关闭，使用实时波纹时间。启动器 `-Preset Day -Cycle -HideFairy` 恢复可操作 Play 预览，面板可随时显示精灵。
+
+最新证据目录 `.artifacts/validation/afk-recovered/2026-10-10/shore-waves/` 包含 `verification.json`、`shore-waves-probe.json`、`verification-advanced.json`、`verification-fairy.json`、`compile.json`、`shader-diagnostics.json`、`saved-scene.json`、`launcher.log`、`live-status.json`、`PlayMode-HeroStudy.json`、Foundation/Architecture/Unity 日志及截图动图。本轮没有修改 GF、vendor/shared、平台 Runtime/Editor、Packages 或 ProjectSettings；细 VT 的 13 个缺失 bundle 和既有复现差距仍保留，不把该优化声称为原游戏完全一致或移动/微信发布验收。
