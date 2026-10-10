@@ -9,7 +9,7 @@ namespace InsectSpace.Rendering
     [DisallowMultipleComponent]
     public sealed class StylizedSkyController : MonoBehaviour
     {
-        public enum Preset { Day, Sunset, Night }
+        public enum Preset { Day, Sunset, Night, Mist }
         [SerializeField] private Material skyTemplate;
         [SerializeField] private StylizedSkyProfile[] profiles = new StylizedSkyProfile[3];
         [SerializeField] private Camera targetCamera;
@@ -26,6 +26,7 @@ namespace InsectSpace.Rendering
         private Color previousAmbient, previousFog, previousLightColor;
         private AmbientMode previousAmbientMode;
         private float previousLightIntensity;
+        private FogState previousFogState;
         private State current, from, destination;
         private float elapsed, duration, cloudPhase, highCloudPhase;
         private int quality = -1;
@@ -36,6 +37,17 @@ namespace InsectSpace.Rendering
         public bool AnimateClouds { get => animateClouds; set => animateClouds = value; }
         public int AppliedQuality => quality;
         public float CloudPhase => cloudPhase;
+        public float AtmosphereStrength => current.atmosphere;
+
+        private struct FogState
+        {
+            public bool enabled;
+            public FogMode mode;
+            public float start,end,density;
+            public static FogState Read() => new FogState {enabled=RenderSettings.fog,mode=RenderSettings.fogMode,start=RenderSettings.fogStartDistance,end=RenderSettings.fogEndDistance,density=RenderSettings.fogDensity};
+            public void Apply() {RenderSettings.fog=enabled;RenderSettings.fogMode=mode;RenderSettings.fogStartDistance=start;RenderSettings.fogEndDistance=end;RenderSettings.fogDensity=density;}
+            public static FogState Blend(FogState a,FogState b,float t) => new FogState {enabled=t<.5f?a.enabled:b.enabled,mode=t<.5f?a.mode:b.mode,start=Mathf.Lerp(a.start,b.start,t),end=Mathf.Lerp(a.end,b.end,t),density=Mathf.Lerp(a.density,b.density,t)};
+        }
 
         // RenderSettings belongs to the active scene. Restore inactive scenes when they
         // next become active, before a new controller captures their baseline.
@@ -44,7 +56,8 @@ namespace InsectSpace.Rendering
             public Material sky;
             public Color ambient, fog;
             public AmbientMode mode;
-            public void Restore() { RenderSettings.skybox=sky; RenderSettings.ambientMode=mode; RenderSettings.ambientLight=ambient; RenderSettings.fogColor=fog; }
+            public FogState fogState;
+            public void Restore() { RenderSettings.skybox=sky; RenderSettings.ambientMode=mode; RenderSettings.ambientLight=ambient; RenderSettings.fogColor=fog;fogState.Apply(); }
         }
         private static void RestorePending(Scene before, Scene after)
         {
@@ -63,8 +76,10 @@ namespace InsectSpace.Rendering
             public Color zenith, middle, horizon, cloudLight, cloudShade, celestial, sunlight, ambient;
             public float exposure, coverage, night, intensity, size, speed;
             public Vector3 direction;
+            public FogState fog;
+            public float atmosphere;
             public static State Read(StylizedSkyProfile p) => new State { zenith=p.zenith,middle=p.middle,horizon=p.horizon,cloudLight=p.cloudLight,cloudShade=p.cloudShade,celestial=p.celestialColor,sunlight=p.sunlight,ambient=p.ambient,exposure=p.exposure,coverage=p.coverage,night=p.night,intensity=p.lightIntensity,size=p.celestialSize,speed=p.cloudSpeed,direction=p.celestialDirection.normalized };
-            public static State Blend(State a, State b, float t) => new State { zenith=Color.Lerp(a.zenith,b.zenith,t),middle=Color.Lerp(a.middle,b.middle,t),horizon=Color.Lerp(a.horizon,b.horizon,t),cloudLight=Color.Lerp(a.cloudLight,b.cloudLight,t),cloudShade=Color.Lerp(a.cloudShade,b.cloudShade,t),celestial=Color.Lerp(a.celestial,b.celestial,t),sunlight=Color.Lerp(a.sunlight,b.sunlight,t),ambient=Color.Lerp(a.ambient,b.ambient,t),exposure=Mathf.Lerp(a.exposure,b.exposure,t),coverage=Mathf.Lerp(a.coverage,b.coverage,t),night=Mathf.Lerp(a.night,b.night,t),intensity=Mathf.Lerp(a.intensity,b.intensity,t),size=Mathf.Lerp(a.size,b.size,t),speed=Mathf.Lerp(a.speed,b.speed,t),direction=Vector3.Slerp(a.direction,b.direction,t).normalized };
+            public static State Blend(State a, State b, float t) => new State { zenith=Color.Lerp(a.zenith,b.zenith,t),middle=Color.Lerp(a.middle,b.middle,t),horizon=Color.Lerp(a.horizon,b.horizon,t),cloudLight=Color.Lerp(a.cloudLight,b.cloudLight,t),cloudShade=Color.Lerp(a.cloudShade,b.cloudShade,t),celestial=Color.Lerp(a.celestial,b.celestial,t),sunlight=Color.Lerp(a.sunlight,b.sunlight,t),ambient=Color.Lerp(a.ambient,b.ambient,t),exposure=Mathf.Lerp(a.exposure,b.exposure,t),coverage=Mathf.Lerp(a.coverage,b.coverage,t),night=Mathf.Lerp(a.night,b.night,t),intensity=Mathf.Lerp(a.intensity,b.intensity,t),size=Mathf.Lerp(a.size,b.size,t),speed=Mathf.Lerp(a.speed,b.speed,t),direction=Vector3.Slerp(a.direction,b.direction,t).normalized,fog=FogState.Blend(a.fog,b.fog,t),atmosphere=Mathf.Lerp(a.atmosphere,b.atmosphere,t) };
         }
 
         private void OnEnable()
@@ -79,10 +94,11 @@ namespace InsectSpace.Rendering
         }
         private void Acquire()
         {
-            if (owns || !skyTemplate || profiles == null || profiles.Length != 3 || !profiles[0] || !profiles[1] || !profiles[2]) return;
+            if (owns || !skyTemplate || profiles == null || profiles.Length < 3 || !profiles[0] || !profiles[1] || !profiles[2]) return;
             if (owner && owner != this) owner.Release();
             RestorePending(default,gameObject.scene);
             previousSky=RenderSettings.skybox; previousAmbient=RenderSettings.ambientLight; previousAmbientMode=RenderSettings.ambientMode; previousFog=RenderSettings.fogColor;
+            previousFogState=FogState.Read();
             if (targetCamera) { previousClear=targetCamera.clearFlags; targetCamera.clearFlags=CameraClearFlags.Skybox; }
             if (directionalLight) { previousLightColor=directionalLight.color; previousLightIntensity=directionalLight.intensity; }
             instance=new Material(skyTemplate) { name=skyTemplate.name+" (runtime)", hideFlags=HideFlags.DontSave };
@@ -94,6 +110,8 @@ namespace InsectSpace.Rendering
             int index=(int)preset;
             if (index < 0 || profiles == null || index >= profiles.Length || !profiles[index]) throw new System.ArgumentOutOfRangeException(nameof(preset));
             CurrentPreset=preset; destination=State.Read(profiles[index]); from=current; elapsed=0; duration=Mathf.Max(0,transitionSeconds);
+            var p=profiles[index];destination.atmosphere=p.atmosphereStrength;
+            destination.fog=p.overrideFog?new FogState {enabled=p.fogEnabled,mode=p.fogMode,start=p.fogStart,end=Mathf.Max(p.fogStart+.01f,p.fogEnd),density=p.fogDensity}:previousFogState;
             if (duration==0) { current=destination; ApplyState(); }
         }
         public void SetQuality(int level) { followQuality=false; ApplyQuality(level); }
@@ -123,6 +141,7 @@ namespace InsectSpace.Rendering
             instance.SetColor(Zenith,ShaderColor(current.zenith)); instance.SetColor(Middle,ShaderColor(current.middle)); instance.SetColor(Horizon,ShaderColor(current.horizon)); instance.SetColor(CloudLight,ShaderColor(current.cloudLight)); instance.SetColor(CloudShade,ShaderColor(current.cloudShade)); instance.SetColor(SunColor,ShaderColor(current.celestial));
             instance.SetVector(SunDirection,current.direction); instance.SetFloat(Exposure,current.exposure); instance.SetFloat(Coverage,current.coverage); instance.SetFloat(Night,current.night); instance.SetFloat(SunSize,current.size);
             RenderSettings.ambientMode=AmbientMode.Flat; RenderSettings.ambientLight=current.ambient; RenderSettings.fogColor=current.horizon;
+            current.fog.Apply();
             if (directionalLight) { directionalLight.color=current.sunlight; directionalLight.intensity=current.intensity; }
         }
         private void OnDisable() { SceneManager.activeSceneChanged-=OnActiveSceneChanged; Release(); }
@@ -131,7 +150,7 @@ namespace InsectSpace.Rendering
         private void Release()
         {
             if (!owns) return; owns=false;
-            var baseline=new EnvironmentState {sky=previousSky,ambient=previousAmbient,mode=previousAmbientMode,fog=previousFog};
+            var baseline=new EnvironmentState {sky=previousSky,ambient=previousAmbient,mode=previousAmbientMode,fog=previousFog,fogState=previousFogState};
             if (gameObject.scene==SceneManager.GetActiveScene()) { if (RenderSettings.skybox==instance) baseline.Restore(); }
             else if (gameObject.scene.IsValid() && gameObject.scene.isLoaded) pendingRestores[gameObject.scene]=baseline;
             if (targetCamera) targetCamera.clearFlags=previousClear;

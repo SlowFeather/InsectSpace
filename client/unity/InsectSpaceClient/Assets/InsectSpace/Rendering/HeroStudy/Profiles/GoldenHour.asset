@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28989dcb10598d14a8bb244969a95ff9, type: 3}
+  m_Name: GoldenHour
+  m_EditorClassIdentifier: InsectSpace.Rendering::InsectSpace.Rendering.StylizedSkyProfile
+  zenith: {r: 0.2509804, g: 0.3254902, b: 0.5176471, a: 1}
+  middle: {r: 0.8117647, g: 0.52156866, b: 0.5764706, a: 1}
+  horizon: {r: 0.96862745, g: 0.81960785, b: 0.627451, a: 1}
+  cloudLight: {r: 1, g: 0.8862745, b: 0.68235296, a: 1}
+  cloudShade: {r: 0.7058824, g: 0.50980395, b: 0.6039216, a: 1}
+  celestialColor: {r: 1, g: 0.81960785, b: 0.5058824, a: 1}
+  sunlight: {r: 1, g: 0.8, b: 0.54509807, a: 1}
+  ambient: {r: 0.5529412, g: 0.5294118, b: 0.60784316, a: 1}
+  exposure: 1
+  coverage: 1
+  night: 0
+  lightIntensity: 0.9
+  celestialSize: 0.018
+  celestialDirection: {x: -0.7844646, y: 0.58834845, z: -0.19611615}
+  cloudSpeed: 0.00022
+  overrideFog: 1
+  fogEnabled: 1
+  fogMode: 1
+  fogStart: 58
+  fogEnd: 180
+  fogDensity: 0.035
+  atmosphereStrength: 0

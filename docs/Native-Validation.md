@@ -39,6 +39,6 @@
 
 `.artifacts/validation/unity-Native.log`、`native-player.log`、`unity-NativePatch.log`、`native-patch-player.log`、`native-patch-result.json`。
 
-成功标记包括 `NATIVE_CODE_LOADED`、`FOUNDATION_READY modules=8 tables=2`、`CONTENT_LIFECYCLE_PASSED`、`NATIVE_VALIDATION_PASSED`；补丁日志还须包含 `GAMEPLAY_REVISION native-patch-002` 和实际发现的新版本。
+成功标记包括 `NATIVE_CODE_LOADED`、`FOUNDATION_READY modules=8 tables=4`、`CONTENT_LIFECYCLE_PASSED`、`NATIVE_VALIDATION_PASSED`；补丁日志还须包含 `GAMEPLAY_REVISION native-patch-002` 和实际发现的新版本。
 
 验证使用 `-nographics`。Null 图形设备下的 shader 不支持日志不能作为画面质量或 GPU 兼容结论；本脚本验证的是运行时与内容链路。真实渲染和微信真机仍需独立验收。

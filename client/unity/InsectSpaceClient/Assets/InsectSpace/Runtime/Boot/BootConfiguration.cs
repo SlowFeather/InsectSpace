@@ -21,6 +21,15 @@ namespace InsectSpace.Client
         public ContentPackageVersion[] contentPackages = Array.Empty<ContentPackageVersion>();
         public string remoteRoot = "";
         public string fallbackRoot = "";
+        // Development-only service endpoints. Production builds should provide HTTPS endpoints
+        // through the release configuration and keep localBackendMode disabled.
+        public string identityUrl = "";
+        public string lobbyUrl = "";
+        public string battleUrl = "";
+        public bool localBackendMode;
+        public string backendWorldClusterId = "local-cluster";
+        public string backendSceneId = "home";
+        public string worldSceneAddress = "WorldSandbox";
         public QualityTier quality = QualityTier.Medium;
         public string[] tableLocations = { "tbworldscene", "tbqualityprofile" };
 
@@ -31,6 +40,17 @@ namespace InsectSpace.Client
             try
             {
                 var config = JsonUtility.FromJson<BootConfiguration>(text.text);
+#if UNITY_EDITOR
+                // Explicit session-local launcher switch; never written into release configuration.
+                if (Environment.GetEnvironmentVariable("INSECTSPACE_EDITOR_BACKEND") == "true")
+                {
+                    config.localSmokeMode = false;
+                    config.localBackendMode = true;
+                    config.identityUrl = "http://127.0.0.1:8081";
+                    config.lobbyUrl = "http://127.0.0.1:8082";
+                    config.battleUrl = "http://127.0.0.1:8084";
+                }
+#endif
 #if DEVELOPMENT_BUILD && ENABLE_IL2CPP && !UNITY_EDITOR && !INSECTSPACE_WEB_DEVELOPMENT
                 NativeValidationProbe.ConfigureRemoteRun(config);
 #endif
@@ -45,6 +65,7 @@ namespace InsectSpace.Client
                 string.IsNullOrWhiteSpace(playerBuildId) ||
                 tableLocations == null || tableLocations.Length == 0)
                 throw new InvalidOperationException("Invalid bootstrap configuration.");
+            ValidateBackend();
 #if UNITY_WEBGL && INSECTSPACE_WEB_DEVELOPMENT && DEVELOPMENT_BUILD && !UNITY_EDITOR
             ValidateWebDevelopment();
 #else
@@ -69,10 +90,28 @@ namespace InsectSpace.Client
                 throw new InvalidOperationException("Web development requires explicit local mode and bundled resources; online failures never select this mode.");
         }
 
-        private static bool IsPermittedRemoteRoot(string root)
+        private void ValidateBackend()
+        {
+#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
+            if (localBackendMode) throw new InvalidOperationException("Local backend mode requires Editor or Development build.");
+#endif
+            foreach (var endpoint in new[] { identityUrl, lobbyUrl, battleUrl })
+            {
+                if (string.IsNullOrWhiteSpace(endpoint)) continue;
+                if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) ||
+                    !string.IsNullOrEmpty(uri.UserInfo) || !string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment) ||
+                    (uri.Scheme != Uri.UriSchemeHttps && !(localBackendMode && uri.Scheme == Uri.UriSchemeHttp && uri.Host == "127.0.0.1")))
+                    throw new InvalidOperationException("Backend endpoints require HTTPS; explicit local mode permits only loopback HTTP.");
+            }
+        }
+
+        private bool IsPermittedRemoteRoot(string root)
         {
             if (!Uri.TryCreate(root, UriKind.Absolute, out var uri) || !string.IsNullOrEmpty(uri.UserInfo)) return false;
             if (uri.Scheme == Uri.UriSchemeHttps) return true;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (localBackendMode && uri.Scheme == Uri.UriSchemeHttp && uri.Host == "127.0.0.1") return true;
+#endif
 #if DEVELOPMENT_BUILD && ENABLE_IL2CPP && !UNITY_EDITOR && !INSECTSPACE_WEB_DEVELOPMENT
             return NativeValidationProbe.IsLoopbackRun && uri.Scheme == Uri.UriSchemeHttp && uri.Host == "127.0.0.1";
 #else

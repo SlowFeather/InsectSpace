@@ -41,7 +41,7 @@ namespace InsectSpace.Tests
             var config = BootConfiguration.Load();
             config.Validate();
             Assert.IsTrue(config.localSmokeMode);
-            Assert.AreEqual(2, config.tableLocations.Length);
+            CollectionAssert.AreEquivalent(new[] { "tbworldscene", "tbqualityprofile", "tbbattlerule", "tbbattleskill" }, config.tableLocations);
         }
         [Test]
         public void RemoteResourcesRequireHttps()

@@ -1,0 +1,27 @@
+newmtl Surface_0
+Kd 1 1 1
+map_Kd albedo_00.png
+
+newmtl Surface_1
+Kd 1 1 1
+map_Kd albedo_01.jpg
+
+newmtl Surface_2
+Kd 1 1 1
+map_Kd albedo_02.jpg
+
+newmtl Surface_3
+Kd 1 1 1
+map_Kd albedo_03.jpg
+
+newmtl Surface_4
+Kd 1 1 1
+map_Kd albedo_04.jpg
+
+newmtl Surface_5
+Kd 1 1 1
+map_Kd albedo_05.jpg
+
+newmtl Surface_6
+Kd 1 1 1
+map_Kd albedo_06.png

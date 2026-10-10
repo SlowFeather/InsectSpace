@@ -1,0 +1,25 @@
+<module name="">
+  <bean name="BattleRule">
+    <var name="id" type="int"/>
+    <var name="playerMaxHp" type="int"/>
+    <var name="monsterMaxHp" type="int"/>
+    <var name="autoAttackDamage" type="int"/>
+    <var name="autoAttackIntervalFrames" type="int"/>
+    <var name="monsterAttackDamage" type="int"/>
+    <var name="monsterAttackIntervalFrames" type="int"/>
+    <var name="maxResource" type="int"/>
+    <var name="resourceRegenPerFrame" type="int"/>
+  </bean>
+  <table name="TbBattleRule" value="BattleRule" input="*@battle_rules.json" index="id"/>
+  <bean name="BattleSkill">
+    <var name="id" type="string"/>
+    <var name="guId" type="int"/>
+    <var name="name" type="string"/>
+    <var name="damage" type="int"/>
+    <var name="cooldownFrames" type="int"/>
+    <var name="resourceCost" type="int"/>
+    <var name="targetCount" type="int"/>
+    <var name="note" type="string"/>
+  </bean>
+  <table name="TbBattleSkill" value="BattleSkill" input="*@battle_skills.json" index="id"/>
+</module>

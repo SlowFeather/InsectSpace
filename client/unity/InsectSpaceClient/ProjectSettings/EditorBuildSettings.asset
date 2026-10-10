@@ -14,4 +14,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/InsectSpace/Scenes/MeadowShowcase.unity
     guid: eb9b13ac11b410c49bb5e3efd1f0ac1d
+  - enabled: 1
+    path: Assets/InsectSpace/Demos/LocalWorldNavigation.unity
+    guid: d342794f48bdf2c4ba74a18e0a34e15f
+  - enabled: 1
+    path: Assets/InsectSpace/Demos/LocalMoonlightBattle.unity
+    guid: 3c2bc669ad89f1541a177680d130da96
   m_configObjects: {}

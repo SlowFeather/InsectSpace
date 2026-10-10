@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: HeroCloudSky
+  m_Shader: {fileID: 4800000, guid: 39356d35442da8241836d5c00478fa5e, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _SKY_DETAILS
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _CloudAtlas:
+        m_Texture: {fileID: 2800000, guid: 9e33e9e14ac001340a5a348a105be6c6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Coverage: 1
+    - _Details: 1
+    - _Exposure: 1
+    - _Night: 0
+    - _Rotation: 0
+    - _SunSize: 0.018
+    m_Colors:
+    - _CloudLight: {r: 1, g: 0.9647059, b: 0.87058824, a: 1}
+    - _CloudOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _CloudShade: {r: 0.44705883, g: 0.6627451, b: 0.7294118, a: 1}
+    - _Horizon: {r: 0.75686276, g: 0.85490197, b: 0.81960785, a: 1}
+    - _Middle: {r: 0.34509805, g: 0.67058825, b: 0.79607844, a: 1}
+    - _SunColor: {r: 1, g: 0.95686275, b: 0.8, a: 1}
+    - _SunDirection: {r: -0.7844646, g: 0.58834845, b: -0.19611615, a: 0}
+    - _Zenith: {r: 0.15686275, g: 0.47058824, b: 0.6666667, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

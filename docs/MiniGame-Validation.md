@@ -10,7 +10,7 @@
 - Core 中包含 14 份目标匹配的 AOT 元数据、独立 Gameplay DLL 和两张 Luban 表。
 - WorldCommon 包含 MiniGame 目标的预制体/场景 bundle。
 - 原始导出在本机 Chrome 中实际运行，日志确认 `NATIVE_CODE_LOADED aot=14` 和
-  `FOUNDATION_READY modules=8 tables=2`；斜俯视灰盒正常显示。
+  `FOUNDATION_READY modules=8 tables=4`；斜俯视灰盒正常显示。
 
 **浏览器运行原始 MiniGame WASM 不等同于微信小游戏运行。** 官方微信 SDK 转换现已单独通过；
 开发者工具、真机网络、平台缓存、前后台恢复和微信同母包远程补丁仍须单独验收。

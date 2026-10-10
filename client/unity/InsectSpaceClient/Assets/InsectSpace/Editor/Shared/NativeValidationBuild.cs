@@ -36,6 +36,9 @@ namespace InsectSpace.Editor
             EditorUserBuildSettings.development = true;
             EditorUserBuildSettings.allowDebugging = false;
             EditorUserBuildSettings.buildScriptsOnly = false;
+#if UNITY_EDITOR_WIN
+            UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = false;
+#endif
             var config = BootConfiguration.Load();
             config.editorSimulate = false;
             config.localSmokeMode = false;
@@ -63,6 +66,9 @@ namespace InsectSpace.Editor
             finally { IsBuilding = false; }
             if (report.summary.result != BuildResult.Succeeded)
                 throw new BuildFailedException("Native validation Player failed to build: " + report.summary.result);
+            if (!File.Exists(Path.Combine(OutputRoot, "InsectSpace.Validation.exe")) ||
+                !File.Exists(Path.Combine(OutputRoot, "GameAssembly.dll")))
+                throw new BuildFailedException("Native validation requires an executable Player, not an exported solution.");
             File.WriteAllText(Path.Combine(OutputRoot, "aot-source.sha256"), AotSourceFingerprint());
             Debug.Log("[InsectSpace] NATIVE_PLAYER_BUILT " + report.summary.outputPath);
         }

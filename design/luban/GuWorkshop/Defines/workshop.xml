@@ -1,0 +1,26 @@
+<module name="">
+  <bean name="WorkshopItem">
+    <var name="id" type="int"/><var name="name" type="string"/><var name="note" type="string"/>
+  </bean>
+  <table name="TbItem" value="WorkshopItem" input="*@items.json" index="id"/>
+  <bean name="WorkshopOffer">
+    <var name="id" type="int"/><var name="gu" type="int"/><var name="item" type="int"/>
+    <var name="quantity" type="int"/><var name="yuanShi" type="int"/>
+  </bean>
+  <table name="TbOffer" value="WorkshopOffer" input="*@offers.json" index="id"/>
+  <bean name="WorkshopCare">
+    <var name="id" type="int"/><var name="food" type="int"/><var name="foodCount" type="int"/>
+    <var name="fedSeconds" type="int"/><var name="refineFee" type="int"/>
+    <var name="success" type="int"/><var name="destroy" type="int"/><var name="note" type="string"/>
+  </bean>
+  <table name="TbCare" value="WorkshopCare" input="*@care.json" index="id"/>
+  <bean name="WorkshopAmount"><var name="id" type="int"/><var name="count" type="int"/></bean>
+  <bean name="WorkshopRecipe">
+    <var name="id" type="int"/><var name="name" type="string"/>
+    <var name="ingredients" type="list,WorkshopAmount"/>
+    <var name="output" type="int"/><var name="minimumRank" type="int"/>
+    <var name="materials" type="list,WorkshopAmount"/><var name="yuanShi" type="int"/>
+    <var name="success" type="int"/><var name="destroy" type="int"/><var name="source" type="string"/>
+  </bean>
+  <table name="TbRecipe" value="WorkshopRecipe" input="*@recipes.json" index="id"/>
+</module>

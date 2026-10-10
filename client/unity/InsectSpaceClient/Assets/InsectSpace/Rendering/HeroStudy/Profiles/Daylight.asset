@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28989dcb10598d14a8bb244969a95ff9, type: 3}
+  m_Name: Daylight
+  m_EditorClassIdentifier: InsectSpace.Rendering::InsectSpace.Rendering.StylizedSkyProfile
+  zenith: {r: 0.15686275, g: 0.47058824, b: 0.6666667, a: 1}
+  middle: {r: 0.34509805, g: 0.67058825, b: 0.79607844, a: 1}
+  horizon: {r: 0.75686276, g: 0.85490197, b: 0.81960785, a: 1}
+  cloudLight: {r: 1, g: 0.9647059, b: 0.87058824, a: 1}
+  cloudShade: {r: 0.44705883, g: 0.6627451, b: 0.7294118, a: 1}
+  celestialColor: {r: 1, g: 0.95686275, b: 0.8, a: 1}
+  sunlight: {r: 1, g: 0.94509804, b: 0.8352941, a: 1}
+  ambient: {r: 0.6313726, g: 0.7254902, b: 0.75686276, a: 1}
+  exposure: 1
+  coverage: 1
+  night: 0
+  lightIntensity: 1.1
+  celestialSize: 0.018
+  celestialDirection: {x: -0.7844646, y: 0.58834845, z: -0.19611615}
+  cloudSpeed: 0.00022
+  overrideFog: 1
+  fogEnabled: 1
+  fogMode: 1
+  fogStart: 58
+  fogEnd: 180
+  fogDensity: 0.035
+  atmosphereStrength: 0

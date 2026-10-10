@@ -20,5 +20,13 @@ namespace InsectSpace.Rendering
         [Range(.005f,.1f)] public float celestialSize = .022f;
         public Vector3 celestialDirection = new Vector3(.55f,.38f,.74f);
         [Tooltip("Turns per second; visual wind only.")] public float cloudSpeed = .00065f;
+        [Header("Optional atmosphere override")]
+        public bool overrideFog;
+        public bool fogEnabled = true;
+        public FogMode fogMode = FogMode.Linear;
+        [Min(0)] public float fogStart = 8;
+        [Min(.01f)] public float fogEnd = 34;
+        [Min(0)] public float fogDensity = .035f;
+        [Range(0,1)] public float atmosphereStrength;
     }
 }

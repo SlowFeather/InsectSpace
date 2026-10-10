@@ -14,7 +14,13 @@ namespace InsectSpace.Gameplay
     public static class HotUpdateEntry
     {
         [Preserve]
-        public static IHotUpdateApplication Create(BootContext context) => new GameplayApplication(context);
+        public static IHotUpdateApplication Create(BootContext context)
+        {
+#if DEVELOPMENT_BUILD && ENABLE_IL2CPP && !UNITY_EDITOR && UNITY_STANDALONE_WIN
+            BackendNativeCacheValidation.RunWhenRequested();
+#endif
+            return new GameplayApplication(context);
+        }
     }
 
     internal sealed class GameplayApplication : IHotUpdateApplication

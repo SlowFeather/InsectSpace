@@ -68,6 +68,7 @@ namespace InsectSpace.Client
 
         private IEnumerator PrepareContent(ResourcePackage target, string name, string version)
         {
+            Progress = 0f; ProgressStage = "Preparing " + name;
             var initialize = target.InitializePackageAsync(CreateOptions(name, false));
             yield return initialize;
             Check(initialize);
@@ -81,15 +82,18 @@ namespace InsectSpace.Client
             }
 #endif
             var manifest = target.LoadPackageManifestAsync(new LoadPackageManifestOptions(version, 30));
+            ProgressStage = "Loading " + name + " manifest";
             yield return manifest;
             Check(manifest);
             var download = target.CreateResourceDownloader(new ResourceDownloaderOptions((string[])null, 4, 2));
             if (download.TotalDownloadCount > 0)
             {
                 download.StartDownload();
-                yield return download;
+                ProgressStage = "Downloading " + name;
+                while (!download.IsDone) { Progress = download.Progress; yield return null; }
                 Check(download);
             }
+            Progress = 1f; ProgressStage = name + " ready";
             Debug.Log("[InsectSpace] CONTENT_PACKAGE_READY package=" + name + " version=" + version);
         }
 

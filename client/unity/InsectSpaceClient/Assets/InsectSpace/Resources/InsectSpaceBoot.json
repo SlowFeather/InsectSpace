@@ -10,5 +10,5 @@
   "remoteRoot": "",
   "fallbackRoot": "",
   "quality": 1,
-  "tableLocations": ["tbworldscene", "tbqualityprofile"]
+  "tableLocations": ["tbworldscene", "tbqualityprofile", "tbbattlerule", "tbbattleskill"]
 }

@@ -1,0 +1,19 @@
+[
+  {
+    "id": 2001,
+    "name": "月芒蛊",
+    "ingredients": [
+      { "id": 1001, "count": 1 },
+      { "id": 1002, "count": 2 }
+    ],
+    "output": 2001,
+    "minimumRank": 2,
+    "materials": [
+      { "id": 30002, "count": 1 }
+    ],
+    "yuanShi": 10,
+    "success": 7000,
+    "destroy": 2000,
+    "source": "内部原型默认路线；月光蛊×1 + 小光蛊×2 -> 二转月芒蛊；概率、材料和费用可调整"
+  }
+]

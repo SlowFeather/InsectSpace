@@ -6,6 +6,7 @@ namespace InsectSpace.Gameplay.Modules
 {
     internal sealed class LobbyModule : ModuleBase
     {
+        private BackendLobbyPanel panel;
         public override string Id => "lobby";
         public override IReadOnlyList<string> Dependencies => new[] { "platform" };
         public override void Start(ServiceRegistry services)
@@ -15,9 +16,16 @@ namespace InsectSpace.Gameplay.Modules
             {
                 context.Log("LOCAL_SMOKE: no account authentication or backend connection.");
                 context.Session.Authenticated(1);
+                return;
             }
-            // Online mode deliberately stays SignedOut until a real backend validates login.
+            panel = new UnityEngine.GameObject("InsectSpace Backend Lobby UI").AddComponent<BackendLobbyPanel>();
+            UnityEngine.Object.DontDestroyOnLoad(panel.gameObject);
+            panel.Initialize(context);
         }
-        public override void Stop() { }
+        public override void Stop()
+        {
+            if (panel != null) UnityEngine.Object.Destroy(panel.gameObject);
+            panel = null;
+        }
     }
 }

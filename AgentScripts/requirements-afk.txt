@@ -1,0 +1,3 @@
+# Local archive extraction; no game or production credentials are used.
+UnityPy==1.25.4
+Pillow==12.3.0
