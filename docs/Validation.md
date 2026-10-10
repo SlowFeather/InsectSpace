@@ -453,3 +453,148 @@ Foundation 覆盖：全部 10000 个权重输入得到精确分档数量、百�
 - 为兼容团结运行时，启动覆盖层和后端大厅面板统一使用 `LegacyRuntime.ttf`；团结无图形 PlayMode 的 `DrawBuffers`/NavMesh 报错属于引擎无图形限制，不作为业务通过依据。
 
 本轮未改变正式项目入口、服务器路由或资源回退策略。真实微信传输、生产账号、在线 AOI/PvP 和真机发布仍需按 [WeChat-Release-Gates.md](WeChat-Release-Gates.md) 完成平台验收。
+
+## 2026-10-07：人物、草地与云雾研究及 MuMu 素材对照
+
+本轮更新 Unity 6 的 HeroCloudStudy：人物/探索两种透视机位随宽高比重新构图，草地按自然疏密分布，加入路径、花、石块、灌木和远树林，调整暖白积云、冷青阴影及迷雾层次。默认场景仍使用 Valerya；根据用户授权，从 Root MuMu 的已下载资源另建 `Assets/Temp/AFKStudy/AFKCloudStudy.unity`，使用 Faye 原始骨骼、待机动画、贴图与草花网格作本地对照。
+
+- `tools/Test-Foundation.ps1`：**85/85**，服务端启动检查通过；`tools/Test-Architecture.ps1`：通过。
+- Unity EditMode **46/46**、完整 PlayMode **56/56**；修正花朵 alpha 在 Forward/DepthOnly/ShadowCaster 中的一致裁剪后，专项 `InsectSpace.Tests.HeroCloudStudyTests` **5/5**。完整与专项结果分别保存在 `.artifacts/validation/hero-cloud-study/2026-10-07/PlayMode-All.json`、`PlayMode-HeroStudy.json`。
+- 首次完整 PlayMode 为 **55/56**：角色 `SkinnedMeshRenderer.bounds` 包含动画预留范围，构图断言误报。改为 BakeMesh 的实际姿态范围后全量通过，没有放宽断言边界来掩盖真实裁剪。
+- AFK 实际顶点探针通过：有效 Generic Avatar、循环待机 **1.633333 秒**、7 个蒙皮 Renderer；3 个姿态 × HERO/EXPLORE × 16:9/9:16/3:4 均在视口内，根位置不漂移，蒙皮顶点有变化。证据为日期目录下 `afk-probe.json`，不将探针计入 Unity Test Runner 的 56 个测试。
+- 默认场景与 AFK 场景均检查横竖屏截图；实际操作验证了控件展开/收起、MIST 预设和 EXPLORE 切换。三个研究 Shader 编译诊断为空。`Start-HeroCloudStudy.ps1 -AfkReference` 实际启动成功，人物和云动画恢复实时运行。
+- 从 MuMu 拉取 **6,133 个 LPak / 10,792,623,333 bytes**；目录切出 **214,972 个 UnityFS**，另保留 **26,149 个非 UnityFS**，这些非 UnityFS 条目的长度全部完整。目录另有 **2,242 个未下载包**，不声称已获取服务器全库。原包、清单、批次日志和可搜索导出索引位于忽略的 `.artifacts/reference/afk-journey/all/`。
+
+旧版 GUI 在集中解析 Shader 包时曾内存不足；批处理改用 AssetStudioModCLI v0.19.0。试跑发现扁平文件名碰撞和 Windows 长路径错误，最终流程保留输入相对路径，输出使用对象 ID，原名称留在 XML/CSV/SQLite 索引。批次转换统计及残留异常以本地 `export-result.json` 为准，不能把“原包已保留”当作“所有 Shader、动画和 FBX 均已转换可用”。
+
+商业素材仅位于忽略目录，本地渲染对照不代表获得发布授权。未修改 GF、vendor/shared、平台 Runtime/Editor 或全项目管线设置；未运行本轮团结、WebGL、微信或设备性能/发布验收。复建与预览入口见 [人物与云雾研究](Hero-Cloud-Study.md)。
+
+## 2026-10-08：AFK 研究场景收尾复验
+
+本轮只复验 Unity 6 本地研究场景和项目门禁：
+
+- Unity `6000.6.3f1` `recompile`：0 errors / 0 warnings。
+- `tools/Test-Architecture.ps1`：通过。
+- `tools/Test-Foundation.ps1`：**85/85**，`SERVER_FOUNDATION_READY scenes=1 deterministicFrames=20`。
+- `tools/Test-ClientDemo.ps1 -Mode PlayMode -Filter InsectSpace.Tests.HeroCloudStudyTests`：**5/5**。
+- `AgentScripts/VerifyAfkStudy.cs`：有效 Generic Avatar、待机 1.63333344 秒、7 个蒙皮 Renderer、真实顶点变形、根不漂移；Hero/Explore × 16:9、9:16、3:4 全部通过。
+- 截图证据：`client/unity/InsectSpaceClient/Assets/Temp/AFKStudy/AFK-Explore-Adjusted-Desktop-3.png`、`AFK-Explore-Adjusted-Portrait-3.png`。
+
+`git diff --check` 仍只报告 `HeroCloudStudy.unity` 中已有的空对象 `m_Name:` 尾随空格；这些是 Unity 序列化场景的空名称字段，本轮没有改动其语义。AFK 商业素材、原始包和导出索引继续位于忽略目录，仅供本地画面对照；本轮没有做 MuMu 注入、移动设备性能、微信真机或发布门禁验收。
+
+## 2026-10-08：AFK 湖岸渲染复现
+
+本轮新增独立的 `Assets/Temp/AFKStudy/Replica/AFKLakeside.unity` 本地研究场景，以及 `tools/Start-AfkRenderStudy.ps1` 启动入口。场景复用了本机解包的 Faye Generic Avatar、待机动画、草花网格和湖岸环境参考，加入专用分层岩壁、湖面、程序化草花、营地远景、横竖屏正交构图和 Day/RainNight 两套天气。
+
+- Unity 6 编译：**0 errors / 0 warnings**；Unity **6000.6.3f1**。
+- `BuildAfkReplica.VerifyAndCapture`：Generic Avatar 有效，待机 **1.63333344 秒**，真实蒙皮变形 **0.0393344**，根节点不漂移；横屏和竖屏人物均未裁切。
+- 四张截图均无紫色 Shader 错误：`Day-Desktop.png`、`Day-Portrait.png`、`RainNight-Desktop.png`、`RainNight-Portrait.png`；探针为 `render-probe.json`。
+- Foundation：**85/85**；Architecture：通过；`git diff --check`：通过（仅保留已有 Unity 场景空名称字段的尾随空格提示）。
+
+证据目录：`.artifacts/validation/afk-render-replica/2026-10-08/`。商业参考包、导出索引和场景均属于忽略目录下的本地研究内容，没有进入正式发布资源；本轮未进行 MuMu 注入、移动设备 GPU/内存、微信真机或生产发布验收。
+
+## 2026-10-08：AFK 原家园数据恢复与湖岸对照
+
+默认入口现为 `Assets/Temp/AFKStudy/Homestead/AFKRecoveredLakeside.unity`，以解包原岩壁、树木、灌木、芦苇、蒲公英、建筑和 Faye 重新组合 MuMu 湖岸构图。`Start-AfkRenderStudy.ps1 -FullMap` 打开独立的原始静态布局 `AFKHomestead.unity`。两者不能混称为准确恢复了 MuMu 中用户的动态家园。
+
+- 完整布局有 **34,182** 个静态实例、基础 **232 meshes / 136 materials / 204 textures**，另有 **3,194** 个原水块。当前预制体库重导 **298** 项；默认场景 **900 renderers / 810 组原草实例**。
+- 按解包 GLES 校正公告板左右方向、竖直阴影、阴影接收偏移、芦苇 diffuse/BaseColor 混合、花朵 `_Scale` 及位置随机旋转。全地图复查发现巨大花朵后补齐 `_Scale`，重新截图确认尺寸恢复。修正横屏下粗地面三角形穿出湖面的接缝。
+- UnityCLI `BuildLibrary`、`UpdateRecovery`、`FrameFullMap` 和 `Start-AfkRenderStudy.ps1 -Rebuild -Preset Day` 实际执行成功；检查了 `data.result.success` 与内部 diagnostics，不只依据 CLI 退出码。
+- Unity `6000.6.3f1` 编译 **0 errors / 0 warnings**；Foundation **85/85**，服务端 `SERVER_FOUNDATION_READY scenes=1 deterministicFrames=20`；Architecture 通过。
+- Unity Test Runner：`InsectSpace.Tests.HeroCloudStudyTests` PlayMode **5/5**，无失败或跳过。这是现有渲染研究回归；AFK 新场景另由专项探针检查，没有将其计入 Test Runner 数量。
+- 最终 `VerifyAfkRecovered.Run`：有效 Avatar、7 skins、原循环待机 **1.63333344 秒**；蒙皮顶点变形平方量 **0.0393344**、根稳定。日夜 × 1600×900 / 1080×1920 四图均非空、人物未裁切、magentaSamples 为 0；开关实时阴影有 **18,925** 个显著变化像素（320×568）。已目视检查默认场景和完整地图截图。
+- Python 提取 helper 已迁至 AgentScripts；6 个脚本语法检查通过，入口导入及真实 catalog 依赖解析通过（家园场景 18 bundles / 30,769,253 bytes）。本轮没有在空档案上重跑全量导出；源档案、补充导出和旧角色场景仍是本机依赖。
+- 本次 AFK 源码/脚本/文档范围的空白与冲突标记检查通过。保留现有 HeroStudy 用户改动，没有改 GF、vendor/shared、平台 Runtime/Editor 或全项目管线。
+
+证据位于 `.artifacts/validation/afk-recovered/2026-10-08/`，包括 `verification-command.json`、`render-probe.json`、四张 Day/Night 截图、`FullMap-Portrait.png`、`PlayMode-HeroStudy.json`、`compile.json`、Foundation/Architecture 日志。默认场景最终保持 Day Play。
+
+视觉仍未一比一：缺细级别 VT、原水面反射及完整 RenderFeature，动态家园布局、主角、花种/比例和建筑特效尚有差距。无紫色错误与探针通过不能替代视觉一致性判断。没有完成本轮移动性能、团结/WebGL、微信真机或发布验收。启动与数据边界见 [AFK 渲染研究](AFK-Render-Study.md)。
+
+## 2026-10-09：AFK 夜景、角色材质与水面增量复验
+
+本条更新上一条的画面和恢复状态。按用户要求以渲染为重点，湖岸仍使用近似布局；从已恢复的原材质、编译 GLES、环境曲线、LUT 和 MuMu 保存照片继续校准。默认场景现有 **974 renderers / 810 组原草实例**，花朵更换为原 `pbsc_bio_ep05_dandelion_01_hd`。
+
+- 水 Shader 部分恢复原 `skybox_02` 反射、流动噪声与光斑；Faye 三份不透明 `iGame/Char` 材质使用原贴图/参数与专用适配 Shader，恢复主光环境权重、强度上限和附加光 ramp。角色皮肤 SDF、深度轮廓光、妆容、溶解、闪光及 IBL 尚未完整恢复。
+- 岩壁顶面、植被、草高、水色及角色暖光继续按截图人工校准；`_StudyNight*` 与局部填充/遮蔽不是原游戏参数。补齐两个适配 Shader 的点光投影变体；默认场景关闭点光投影，以主光阴影的 0.7 遮蔽权重近似暖光填充，避免校准光产生第二组蓝影。
+- `Start-AfkRenderStudy.ps1 -Rebuild -Preset Night` 与最终 `VerifyAfkRecovered.Run` 成功，内部 diagnostics 为空。Unity **6000.6.3f1** 编译检查：**0 errors / 0 warnings**。
+- Foundation：**85/85**，`SERVER_FOUNDATION_READY scenes=1 deterministicFrames=20`；Architecture：通过，SDK hashes、12 assemblies、依赖方向及双引擎配置检查通过。
+- Unity Test Runner：`InsectSpace.Tests.HeroCloudStudyTests` PlayMode **5/5**。此为现有渲染回归；AFK 专项探针不混入 Test Runner 数量。
+- 最终探针：有效 Generic Avatar、7 skins、原循环待机 **1.63333344 秒**，变形平方量 **0.0393344**、根稳定；三份不透明角色材质使用专用 Shader，角色光白天关闭/夜晚开启。角色光影响 **1,391** 像素、环境光池影响 **135,110** 像素（540×960）；方向光阴影影响 **11,513** 像素（320×568），临时点光投影影响 **7,437** 像素（540×960），探针结束恢复原点光设置。
+- Day/Night × **1600×900 / 1080×1920** 四张图均非空、人物未裁切、magentaSamples 为 0，已目视检查。证据目录 `.artifacts/validation/afk-recovered/2026-10-09/` 包含 `render-probe.json`、`verification-command.json`、四图、`rebuild.log`、`compile.json`、`PlayMode-HeroStudy.json`、Foundation/Architecture 日志。角色提取模块导入检查通过，本轮收尾没有重新导出全量参考档案。
+- MuMu ADB 连接已确认 `device`。本轮参考图 `.artifacts/reference/afk-journey/mumu-live-oct09.png` 是游戏内保存的夜景照片，未把照片边框与 UI 当成渲染区域。VT 只有 38 个可用页面、13 个缺失 bundle，所属 `LDRes/prgroup_LDRes_VT_5130716192642926209.lpak` 本机与 MuMu 均未找到，细级地表画笔细节仍缺失。
+- AFK 源码、脚本与文档范围空白/冲突标记检查通过；保留已有 HeroStudy 改动，没有修改 GF、vendor/shared、平台 Runtime/Editor 或全项目管线。最终保留 Night Play 预览。
+
+仍未达到原游戏视觉一致：地表色块层次、完整水面/角色着色、云影体积雾、建筑特效和主角存在差距。探针与回归通过只证明本地研究场景可运行及相关行为，不作为视觉一致、移动性能、团结/WebGL、微信真机或发布验收。
+
+## 2026-10-09：AFK 流式岩壁恢复与最终渲染验证
+
+本条替代上一条的最终场景数量、花朵、像素计数和收尾状态；上一条保留为历史记录。按用户要求以渲染效果为重点，整体场景仍是近似布局。默认 `AFKRecoveredLakeside.unity` 现有 **957 renderers / 810 组原草实例**，花朵使用原 `pbsc_bio_chapter03_dandelion_01_hd`。
+
+- broadleaf 岩壁从常驻 LOD2 升为解包流式 LOD0；六份网格分别有 118 / 126 / 146 / 156 / 128 / 134 个顶点。场景恢复两段原轮廓的 **7 个岩壁模块**及对应高台地表，保留原尺寸与相对接缝。`BuildLibrary` 每次最后调用 `ImportCliffRecovery`，防止重建回退到 LOD2。裁出的高台地表是开放片，关闭其投影，岩壁仍提供真实阴影。
+- 可逆昼夜 A/B 比较涵盖原太阳方向、原 zone-light、顶面曝光/饱和度/tint 与暖光颜色。当前缺少完整区域数据的构图中，原 zone-light 直用偏亮偏青；最终保留 yaw −40°、ambient contribution 0.88。岩壁夜景曝光 0.8、顶面曝光 0.4、饱和度 0.6、tint `(0.9, 1.05, 0.9)`；高台地表曝光 0.46，前景草地保留白色顶面 tint。暖光强度 22、范围 10.5、颜色 `(1, 0.82, 0.52)`。这些是人工匹配值，不是原游戏配置。比较截图位于 `source-comparison/`；该比较发生在最终开放地表投影调整前。
+- 比较脚本恢复空 `MaterialPropertyBlock` 曾导致植被缩小而阴影尺寸正常，改为 `SetPropertyBlock(block.isEmpty ? null : block)` 后复验尺寸正常。`DisableBatching=True` 用于对象空间变形，不将其写成该回归的修复依据。
+- 最终 `BuildAfkHomestead.BuildStudy` 和 `VerifyAfkRecovered.Run` 均成功，内部 diagnostics 为空。Unity **6000.6.3f1** 编译检查：**0 errors / 0 warnings**。证据为 `rebuild-final.json`、`verification-final.json`、`compile-final.json`。
+- `tools/Test-Foundation.ps1`：**85/85**，`SERVER_FOUNDATION_READY scenes=1 deterministicFrames=20`；`tools/Test-Architecture.ps1`：通过，SDK hashes、12 assemblies、依赖方向、确定性代码及双引擎配置检查通过。最终日志为 `Foundation-final.log`、`Architecture-final.log`。
+- `tools/Test-ClientDemo.ps1 -Mode PlayMode -Filter InsectSpace.Tests.HeroCloudStudyTests`：**5/5**，completed、0 failed / skipped / inconclusive，脚本退出码 0。证据为 `PlayMode-HeroStudy-final.json`。这是现有渲染研究回归，AFK 专项探针不计入 Test Runner 数量。
+- 最终探针：有效 Generic Avatar、7 skins、原循环待机 **1.63333344 秒**、变形平方量 **0.0393344**、根稳定；三份不透明角色材质使用专用 Shader，角色光白天关闭/夜晚开启。方向光阴影影响 **10,679** 像素（320×568）；角色光影响 **1,375**、地面光池影响 **126,434**、临时点光投影影响 **6,329** 像素（540×960）。探针结束恢复原点光设置。
+- Day/Night × **1600×900 / 1080×1920** 四张最终图均非空、人物未裁切、magentaSamples 为 0，已目视检查。最新截图、`render-probe.json` 和以上证据均位于 `.artifacts/validation/afk-recovered/2026-10-09/`。最终 MuMu 参考为 `.artifacts/reference/afk-journey/mumu-live-oct09-latest.png`，显示游戏内保存的夜景照片，比较时排除照片框与 UI。
+- 最终场景与材质已通过 UnityCLI / Editor API 保存为 **Night**，`TimeOfDay=0.05`、角色光开启、scene dirty=false，Play 已停止，证据为 `saved-final.json`。随后正常退出对应项目的 Unity Editor，并通过 MuMuManager 关闭 Android 15 实例 0；进程及实例状态复查均已退出，没有关闭其他编辑器或模拟器实例。
+
+VT 仍只有 **38 个可用页面 / 13 个缺失 bundle**，缺失 `LDRes/prgroup_LDRes_VT_5130716192642926209.lpak` 在本机与 MuMu 中均未找到，细级地表画笔色块未恢复。水面反射、角色高级着色、云影体积雾、建筑特效和截图主角仍有差距；本轮没有将探针通过视作视觉一致，也没有进行移动性能、团结/WebGL、微信真机或发布验收。商业参考继续保留在忽略目录，未修改 GF、vendor/shared、平台 Runtime/Editor 或全项目管线。启动、重建及参数边界见 [AFK 渲染研究](AFK-Render-Study.md)。
+
+## 2026-10-09：MuMu 重开后的实时昼夜校准
+
+本条更新前述最终画面、数量及参考来源。MuMu 可用后改用实时游戏截图 `mumu-oct09-day-live.png` 和 `mumu-oct09-continuation.png`，默认场景为 **953 renderers / 810 组原草实例**，花朵为原 `pbsc_bio_chapter03_dandelion_02_hd`；流式 LOD0 岩壁继续保留。优先匹配渲染，场景仍为近似布局。
+
+- 按实时白天画面校准太阳 yaw 偏移 +20°，夜晚仍为 −40°，并调整地表、岩壁与芦苇昼间 tint。原模板地表改为无压缩双线性采样，扩大纹理色块尺度；缺细 VT 的范围未改变。
+- 水岸 sawtooth 阈值使用 `fwidth` / `smoothstep` 过滤，水体 tint 不再染色岸线；StudyWater 局部岸线宽度 0.04、合成强度 0.55。草高采用原值的 0.8 倍，暖光权重 1.5，与地面一致。参数均为本地校准，原水面 MRT 合成未恢复。可逆对照见 `comparison-shore-grass.json`、`comparison-grass-light.json`。
+- `BuildAfkHomestead.BuildStudy` 重建成功，内部 diagnostics 为空；Unity **6000.6.3f1** `recompile` 为 up_to_date，0 errors / 0 warnings。证据为 `rebuild-live-calibration.json`、`compile-live-calibration.json`；Shader 另经最终实际渲染检查。
+- 此次续作已执行 Foundation **85/85**、服务端 `SERVER_FOUNDATION_READY scenes=1 deterministicFrames=20`、Architecture 通过、HeroCloudStudy PlayMode **5/5**，无失败/跳过/inconclusive。证据为 `Foundation-day-calibration.log`、`Architecture-day-calibration.log`、`PlayMode-HeroStudy-day-calibration.json`；这些回归在最后的水岸和草叶暖光修正前执行，最终修正后重跑了 AFK 专项探针，没有重复全量业务回归。
+- 最新 `VerifyAfkRecovered.Run` 成功、diagnostics 为空：7 skins、有效 Generic Avatar、循环待机 **1.63333344 秒**、变形平方量 **0.0393344**、根稳定；三份不透明角色材质使用专用 Shader，角色光白天关闭/夜晚开启。方向光阴影影响 **9,807** 像素（320×568），角色光 **1,385**、地面光池 **131,442**、临时点光投影 **8,591** 像素（540×960）；探针结束恢复原设置。
+- 最新 Day/Night × **1600×900 / 1080×1920** 四图非空、人物未裁切、magentaSamples 均为 0，已逐张目视检查。证据为 `.artifacts/validation/afk-recovered/2026-10-09/verification-live-calibration.json`、`render-probe.json` 与同目录四张截图。早期 `*-final.json` 和上节像素计数属于历史。
+- 收尾 AFK 源码、脚本与文档的空白/冲突标记检查通过。通过 UnityCLI / Editor API 保存默认场景和材质，最终为 **Night**、`TimeOfDay=0.05`、角色光开启、scene dirty=false、Play 已停止，证据为同目录 `saved-live-calibration.json`。随后 `unity close` 正常退出对应项目 Editor（PID 34140，graceful），MuMuManager 正常关闭 Android 15 实例 0（PID 43004）；复查两进程均已退出、实例 Android/process 均为 false，证据为 `closed-live-calibration.json`。
+
+仍未达到原游戏完全一致：细 VT 地表画笔色块、完整水面合成、角色高级着色、云影体积雾、建筑特效和参考主角未完整恢复。日夜渲染与探针通过不等于视觉一致，也不是移动性能、团结/WebGL 或微信发布验收。
+
+## 2026-10-09：AFK 高级水面、云雾、角色与连续昼夜
+
+本条更新上面的功能完成状态。通过 UnityCLI 在 Unity **6000.6.3f1** 中重建并验证默认湖岸；采用 MuMu 实时昼夜参考和本机解包的原模板地表、云/雾纹理、环境曲线、角色 SDF 与环境立方体贴图。默认场景现有 **1,044 renderers / 810 组原草实例 / 18 个原岩壁模块**。
+
+- 地表：原模板纹理的四组随机旋转/偏移采样平滑混合至粗 VT，补充局部绘制细节并抑制重复。扩展原右侧岩壁轮廓及配套高台，修复横屏悬空切口；高台材质匹配岩壁顶面的 AO、明暗响应、线性 tint 和夜间合成曝光 0.32，去除六边形色差接缝。可逆昼夜比较为 `advanced/comparison-plateau.json` 和 `advanced/plateau/`。
+- 水面：主相机不透明颜色/深度折射、RGB 吸收、深浅水过渡、焦散/接触岸线、原天空立方体/流动噪声/光斑与实时平面反射已接通。修复平面反射垂直倒置；Surface/Character 新增 DepthNormals，解决现有 SSAO 深度预通道遗漏这些表面的问题。使用 URP 本地合成，不声称完整移植原专有 MRT。
+- 氛围：原移动云纹理影响光照，原雾噪声及密度/颜色/散射曲线驱动相机专用 RenderGraph pass，24 步深度限定体积积分。无需修改 Packages、ProjectSettings 或全项目 Renderer 配置。
+- 角色：UV2 面部 SDF、皮肤透射、六面环境 IBL 和深度轮廓光均参与实际像素。原 `hdr_10` / `hdr_34` 为格式 34 **ETC_RGB4 / ETC1 LDR**，已按正确格式解码；没有误当 BC6H。导入按 Shader 属性类型区分 scalar/vector/cubemap，修正 `_NoiseSizeSpeed` 与环境立方体绑定。
+- 时间：太阳、环境、水色、雾和角色暖光连续变化，默认 240 秒一周期。`VerifyAfkAdvanced` 验证 `.995 + .01 → .005`，角色光强度在时间 .18/.25/.32 为 **22/11/0**；午夜太阳颜色差 **2.98e−8**、强度差 **0**。启动器支持 Day/Night/Dawn/Dusk、`-Cycle` 与 `-CycleSeconds`。
+- 最终 `BuildAfkHomestead.BuildStudy`、`VerifyAfkAdvanced.Run`、`VerifyAfkRecovered.Run` 全部成功，内部 diagnostics 为空。重复帧噪声 **0**；独立效果 A/B 变化像素为：体积雾 **33,386**、平面反射 **39,229**、水深合成 **43,724**、云影/云相位各 **31,995**（540×960）；角色 SDF **561**、透射 **8,293**、IBL **10,591**、深度轮廓 **34,388**（1080×1920 近景）。计数阈值以探针源码为准，像素变化只证明功能生效，不代表与原画面一致。
+- 额外数值检查：云影扫描 **16** 个相位；反射贴图有 **602** 个量化颜色，正确镜像位置有 **812** 个红标记像素；水底三个 GPU 样点的实际水深为 **0.6801 / 0.6883 / 0.6863 m**，反射开启/关闭完全一致。有效 Generic Avatar、7 skins、3 份不透明角色材质、原循环待机 **1.63333344 秒**、蒙皮变形平方量 **0.0393344**、根稳定。最终方向光阴影变化 **9,952**、角色暖光 **1,311**、地面光池 **132,846**、临时点光阴影 **8,680** 像素。
+- 最终 Day/Night/Dawn/Dusk × **1600×900 / 1080×1920** 八图非空，已目视检查；Day/Night 专项探针另确认人物未裁切、magentaSamples 为 **0**。最新合图为 `advanced/Final-Overview.jpg`，角色近景为 `advanced/Character-On.png`。
+- 高级渲染实现完成后执行 `tools/Test-Foundation.ps1`：**85/85**，`SERVER_FOUNDATION_READY scenes=1 deterministicFrames=20`；`tools/Test-Architecture.ps1`：SDK hashes、12 assemblies、依赖方向、确定性代码和双引擎配置通过。Unity Test Runner `InsectSpace.Tests.HeroCloudStudyTests` PlayMode **5/5**，failed/skipped/inconclusive 均为 0。最后的高台范围与材质接缝调整只涉及研究构建器，调整后重新执行两个 AFK 专项探针；没有把专项探针计入 Test Runner 数量。
+- 最终 `unity recompile` 为 up_to_date，**0 errors / 0 warnings**，四个研究 Shader 诊断为空；AFK 源码、脚本、文档的空白和冲突标记检查通过。场景与材质已用 Editor API 保存为 **Day、Cycle=true、CycleSeconds=240、scene dirty=false**，启动器实测成功，保留 Editor Play 预览。
+
+最新证据在 `.artifacts/validation/afk-recovered/2026-10-09/advanced/`：`rebuild.json`、`verification-advanced.json`、`advanced-probe.json`、`probe-measurements.json`、`verification-recovered.json`、`compile.json`、`saved-scene.json`、`launcher.log`、`live-status.json`、`Foundation.log`、`Architecture.log`、`PlayMode-HeroStudy.json` 及截图。父目录 `render-probe.json` 和 Day/Night 四图由最终专项探针更新；之前的关闭 Editor 记录和旧像素计数保留为历史。
+
+**资源与复现边界：**原细 VT 仍有 **13 个缺失 bundle**，所属 `LDRes/prgroup_LDRes_VT_5130716192642926209.lpak` 本机与 MuMu 均不存在；现有 38 页面、1536×2048 粗 VT 无法还原原始细画笔布局。因此完成的是模板细节重建，不宣称找回缺失源资源。水面、云影/体积雾、角色高级着色与连续昼夜已实际实现；动态家园布局、参考主角、建筑特效、地表绘制布局及部分角色效果分支仍与原游戏不同。未进行移动 GPU/内存、团结/WebGL、微信真机或发布验收。商业参考继续留在忽略目录；保留已有 HeroStudy 改动，未修改 GF、vendor/shared、平台 Runtime/Editor 或全项目管线。入口与参数见 [AFK 渲染研究](AFK-Render-Study.md)。
+
+## 2026-10-09：水岸细节与可隐藏的小精灵光源
+
+按用户补充，角色身旁的暖光改为小精灵发光：增加本地光点/光晕/双翼轮廓，Point Light 移到角色身旁；夜间强度从旧高位补光的 22 调为 **8**、范围 **8.5**，避免降低光源后地面过曝。场景现有 **1,045 renderers**。小精灵形状为本地绘制，没有声称恢复原游戏精灵模型。
+
+- **Fairy / light** 控件与 `SetFairyVisible(bool)` 同时控制可见光点和照明；关闭时 visual inactive、Light disabled、intensity=0。日夜预设、时间变化和午夜循环不会覆盖隐藏选择；开启时恢复。启动器增加 `-HideFairy`。
+- 水面加入双方向细波纹、连续焦散波场及相应折射/反射扰动。水陆共享轻微不规则边界，浅滩横截面由 11 点增加至 21 点；沿岸距离流驱动柔和覆盖、细接触泡沫和断续移动波带，反射在浅水衰减。修正折射偏移退回主采样点时诊断 raw depth 未同步的问题。原 FullMap 不使用新增距离流，保留旧岸线分支。
+- `BuildAfkHomestead.BuildStudy`、`VerifyAfkWaterFairy.Run` 和 `VerifyAfkAdvanced.RunWaterFairy` 均实际执行成功，内部 diagnostics 为空。水岸软边 A/B **30,190** 像素、细波纹 A/B **11,702** 像素；精灵显示/隐藏在白天变化 **323**、夜间变化 **121,479** 像素（1600×900，同一调用内冻结角色和时间）。隐藏在 .05/.25/.5/.75/.999 五个时刻及跨午夜都保持有效，并验证能够重新显示。
+- 深度与反射回归：三个水底样点深度 **0.6846 / 0.6820 / 0.6835 m**，反射开关前后相同；正确镜像位置 **800** 个红标记像素。高级效果开关、16 相位云影扫描继续通过，重复帧噪声 **0**；晨昏精灵光强为 **8/4/0**，午夜颜色/强度连续。
+- 实际检查水岸近景、昼夜精灵开关和横竖屏截图；保存 Day/Night/Dawn/Dusk 八图。Unity **6000.6.3f1** 编译 **0 errors / 0 warnings**，五个研究 Shader 诊断为空。
+- `tools/Test-Foundation.ps1`：**85/85**、`SERVER_FOUNDATION_READY scenes=1 deterministicFrames=20`；`tools/Test-Architecture.ps1`：通过。最终调整后 `tools/Test-ClientDemo.ps1 -Mode PlayMode -Filter InsectSpace.Tests.HeroCloudStudyTests`：**5/5**，failed/skipped/inconclusive 均为 0。新增专项探针不混入 Test Runner 用例数。
+
+证据：`.artifacts/validation/afk-recovered/2026-10-09/water-fairy/` 中 `rebuild.json`、`compile.json`、`verification.json`、`water-fairy-probe.json`、`verification-advanced.json`、`advanced-probe.json`、`saved-scene.json`、`PlayMode-HeroStudy.json`、Foundation/Architecture 日志、水岸近景和精灵开关对照。`launcher-hidden.log` / `launcher-hidden-status.json` 验证 `-Preset Night -HideFairy` 实际启动后精灵和光关闭；最终留在从 Day 开始的连续循环 Play，精灵隐藏，控制面板可随时恢复，见 `live-status.json` / `Controls.png`。此前 `advanced/` 数据保持为上一轮基线。未修改 GF、vendor/shared、平台 Runtime/Editor 或全项目管线；本轮没有执行移动性能、团结/WebGL 或微信真机验收。
+
+## 2026-10-09：沿岸持续扩散波纹
+
+根据用户提供的岸线近景图，将原来衰减过快的单层内侧波带改为从岸边不断向湖内推进的多道波峰。水网格 G 通道使用到最近岸线线段的距离；弯曲岸线的推进方向不再依赖横向坐标。默认速度 **0.4 m/s**、间距 **0.8 m**、周期 **2 s**、宽度 **0.065 m**、范围 **2 m**，具有近岸渐入、远处淡出、轻微纹理扰动及导数抗锯齿。
+
+- `BuildAfkHomestead.BuildStudy` 与 `VerifyAfkShoreWaves.Run` 实际执行成功，内部 diagnostics 为空。场景仍为 **1,045 renderers**。
+- 在浮点 GPU 诊断帧中，0.6 / 1.2 / 2.6 秒的首道波峰距离为 **0.2182 / 0.4537 / 0.2182 m**，0.6 秒内向外推进 **0.2355 m**，与目标 0.24 m 一致；2.05 米外 mask 为 **0**，两秒周期的最大 mask 差为 **1.55e−6**。这验证的是实际像素中的推进方向、距离衰减和周期连续性。
+- 波纹开关 A/B 在 **960×540** 近景变化 **13,087** 像素。已保存并目视检查昼夜近景、六个相位合图，导出 **40 帧 / 4 秒**循环动图。录帧只固定岸波相位以便复查，结束恢复 `_StudyShoreWaveTime=-1` 使用实时播放时间。
+- Foundation **85/85**、`SERVER_FOUNDATION_READY scenes=1 deterministicFrames=20`；Architecture 通过。Unity HeroCloudStudy PlayMode **5/5**，无失败/跳过；水 Shader 编译诊断为空。新专项探针不计作 Test Runner 用例。
+
+证据目录 `.artifacts/validation/afk-recovered/2026-10-09/shore-waves/`：`rebuild.json`、`verification.json`、`shore-waves-probe.json`、`Day-Waves.png`、`Night-Waves.png`、`Phases.jpg`、`Shore-Waves.gif`、Foundation/Architecture/Unity 日志与 PlayMode 报告。小精灵隐藏功能保留；未改平台目录、项目管线或正式发布资产，未执行移动/微信发布验收。

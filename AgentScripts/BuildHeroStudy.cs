@@ -59,9 +59,9 @@ public static class BuildHeroStudy
             p.overrideFog=true;p.fogEnabled=true;p.fogMode=FogMode.Linear;p.fogStart=58;p.fogEnd=180;p.atmosphereStrength=0;
             if(i==0)
             {
-                p.zenith=C("#136CAA");p.middle=C("#389FD1");p.horizon=C("#A0D8DA");
-                p.cloudLight=C("#FFFDEA");p.cloudShade=C("#72B7CB");p.ambient=C("#A5B8C5");
-                p.sunlight=C("#FFF4DC");p.lightIntensity=1.15f;p.coverage=1;p.exposure=1;
+                p.zenith=C("#2878AA");p.middle=C("#58ABCB");p.horizon=C("#C1DAD1");
+                p.cloudLight=C("#FFF6DE");p.cloudShade=C("#72A9BA");p.ambient=C("#A1B9C1");
+                p.sunlight=C("#FFF1D5");p.lightIntensity=1.10f;p.coverage=1;p.exposure=1;
             }
             if(i==3)
             {
@@ -75,7 +75,7 @@ public static class BuildHeroStudy
         var sky=Mat("HeroCloudSky",skyShader);sky.SetTexture("_CloudAtlas",atlas);
         sky.EnableKeyword("_SKY_DETAILS");ApplySky(sky,profiles[0]);
         var turf=Mat("Turf",groundShader);var grass=Mat("Grass",groundShader);
-        foreach(var m in new[]{turf,grass}) {m.SetColor("_BaseColor",Color.white);m.SetColor("_ShadowTint",C("#78A9A5"));m.SetFloat("_VertexColor",1);m.SetFloat("_Wind",m==grass?.035f:0);}
+        foreach(var m in new[]{turf,grass}) {m.SetColor("_BaseColor",Color.white);m.SetColor("_ShadowTint",C("#527F81"));m.SetFloat("_VertexColor",1);m.SetFloat("_Wind",m==grass?.025f:0);m.SetFloat("_CloudShadow",.62f);}
         var heroMaterials=new Material[7];
         for(int i=0;i<7;i++)
         {
@@ -97,7 +97,7 @@ public static class BuildHeroStudy
         for(int i=0;i<7;i++)heroMaterials[i]=AssetDatabase.LoadAssetAtPath<Material>(Root+"/Materials/Valerya_"+i+".mat");
         random=new System.Random(102026);
         var terrainRoot=new GameObject("Open rolling meadow - procedural seed 102026").transform;
-        Ground(terrainRoot,turf);Grasses(terrainRoot,grass);
+        Ground(terrainRoot,turf);Grasses(terrainRoot,grass);MeadowDetails(terrainRoot,groundShader);
         var character=(GameObject)PrefabUtility.InstantiatePrefab(model);character.name="Valerya - Mixamo humanoid - breathing idle";
         character.transform.position=new Vector3(.12f,Height(.12f,0),0);character.transform.rotation=Quaternion.Euler(0,170,0);
         foreach(var renderer in character.GetComponentsInChildren<Renderer>())
@@ -126,8 +126,9 @@ public static class BuildHeroStudy
         camera.fieldOfView=39;camera.nearClipPlane=.05f;camera.farClipPlane=220;camera.clearFlags=CameraClearFlags.Skybox;
         var cameraData=camera.GetUniversalAdditionalCameraData();cameraData.renderPostProcessing=true;
         cameraData.antialiasing=AntialiasingMode.SubpixelMorphologicalAntiAliasing;cameraData.antialiasingQuality=AntialiasingQuality.High;
+        camera.gameObject.AddComponent<HeroStudyFraming>().Configure(camera,character.transform);
         var sun=new GameObject("Warm key light").AddComponent<Light>();sun.type=LightType.Directional;sun.transform.rotation=Quaternion.Euler(38,-32,0);
-        sun.color=profiles[0].sunlight;sun.intensity=profiles[0].lightIntensity;sun.shadows=LightShadows.Soft;sun.shadowStrength=.65f;sun.shadowBias=.04f;
+        sun.color=profiles[0].sunlight;sun.intensity=profiles[0].lightIntensity;sun.shadows=LightShadows.Soft;sun.shadowStrength=.82f;sun.shadowBias=.025f;
         RenderSettings.sun=sun;RenderSettings.skybox=sky;RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=profiles[0].ambient;
         RenderSettings.fog=true;RenderSettings.fogMode=FogMode.Linear;RenderSettings.fogColor=profiles[0].horizon;RenderSettings.fogStartDistance=58;RenderSettings.fogEndDistance=180;
         var controller=new GameObject("Painterly atmosphere - day sunset night mist").AddComponent<StylizedSkyController>();
@@ -165,6 +166,8 @@ public static class BuildHeroStudy
             if(c==10){cx=.561f;width=.033f;height=.083f;}
             if(c==9){cx=.514f;width=.013f;height=.033f;}
             var puffs=new List<Puff>();
+            // Join the cloud tiers so their caps do not leave enclosed sky holes.
+            puffs.Add(new Puff{x=cx+width*.10f,y=baseY+height*.16f,rx=width*.94f,ry=height*.43f,light=.42f});
             for(int tier=0;tier<3;tier++)
             {
                 int count=8-tier*2;float spread=width*(1-tier*.28f);
@@ -198,6 +201,7 @@ public static class BuildHeroStudy
     }
     static void PaintCloud(Color32[] pixels,int w,int h,List<Puff> puffs,float bottom)
     {
+        float top=puffs.Max(p=>p.y+p.ry);
         foreach(var p in puffs)
         {
             const float distanceRange=8f;
@@ -213,11 +217,12 @@ public static class BuildHeroStudy
                 float alpha=S(-.65f,.65f,distance);
                 float grain=(Mathf.PerlinNoise(u*410,v*520)-.5f)*.018f;
                 float band=S(-.04f,.10f,dy+dx*.22f+grain);
-                float light=Mathf.Clamp01(p.light-.12f+band*.24f+S(.70f,.91f,dy-dx*.22f)*.16f);
+                float vertical=S(bottom,top,v);
+                float light=Mathf.Clamp01(.25f+vertical*.64f+band*.055f+S(.70f,.91f,dy-dx*.22f)*.07f);
                 int k=y*w+(x%w+w)%w;var old=(Color)pixels[k];
                 // Front puffs paint lit caps over deeper tiers without softening the outer edge.
                 float union=Mathf.Max(old.r,shape);
-                float lit=old.r<=.5f?(shape>old.r?light:old.g):Mathf.Lerp(old.g,light,alpha*.94f);
+                float lit=old.r<=.5f?(shape>old.r?light:old.g):Mathf.Lerp(old.g,light,alpha*.32f);
                 pixels[k]=new Color(union,lit,0,1);
             }
         }
@@ -228,11 +233,14 @@ public static class BuildHeroStudy
     }
     static Color Palette(float x,float z)
     {
-        float wave=Mathf.Sin(z*.52f+Mathf.Sin(x*.17f)*1.35f)*.5f+.5f;
-        Color col=Color.Lerp(C("#4D8568"),C("#94AB76"),S(.08f,.94f,wave));
-        col=Color.Lerp(col,C("#478774"),S(16,38,z)*.75f);
-        return col*Mathf.Lerp(.95f,1.03f,Mathf.PerlinNoise(x*.7f+43,z*.7f+32));
+        float patch=Mathf.PerlinNoise(x*.12f+43,z*.16f+32);
+        Color col=Color.Lerp(C("#608D78"),C("#B2BC7D"),S(.21f,.79f,patch));
+        col=Color.Lerp(col,C("#5D9B8C"),S(24,70,z)*.55f);
+        float path=1-S(.78f,1.38f,Mathf.Abs(x-PathX(z)));
+        col=Color.Lerp(col,C("#C8BF94"),path*S(-4,1,z)*.82f);
+        return col*Mathf.Lerp(.97f,1.03f,Mathf.PerlinNoise(x*.65f+4,z*.65f+12));
     }
+    static float PathX(float z) => 3.6f+Mathf.Sin(z*.13f)*3+z*.03f;
     sealed class Geo
     {
         public List<Vector3> v=new List<Vector3>();public List<Vector3> n=new List<Vector3>();public List<Color> c=new List<Color>();public List<Vector2> uv=new List<Vector2>();public List<int> t=new List<int>();
@@ -243,6 +251,12 @@ public static class BuildHeroStudy
             Vertex(p-side,col,Vector2.zero);Vertex(p+side,col,Vector2.right);Vertex(p+Vector3.up*height*.57f+bend*.4f-side*.5f,col*1.03f,new Vector2(0,.57f));
             Vertex(p+Vector3.up*height*.57f+bend*.4f+side*.5f,col*1.03f,new Vector2(1,.57f));Vertex(p+Vector3.up*height+bend,col*1.09f,new Vector2(.5f,1));
             t.AddRange(new[]{k,k+2,k+1,k+1,k+2,k+3,k+2,k+4,k+3});
+        }
+        public void Face(Vector3 a,Vector3 b,Vector3 d,Color color)
+        {
+            int k=v.Count;var normal=Vector3.Cross(b-a,d-a).normalized;
+            foreach(var p in new[]{a,b,d}) {Vertex(p,color,Vector2.zero);n[n.Count-1]=normal;}
+            t.AddRange(new[]{k,k+1,k+2});
         }
         public Mesh Mesh() {var m=new Mesh{indexFormat=IndexFormat.UInt32};m.SetVertices(v);m.SetNormals(n);m.SetColors(c);m.SetUVs(0,uv);m.SetTriangles(t,0);m.RecalculateBounds();return m;}
     }
@@ -271,16 +285,85 @@ public static class BuildHeroStudy
         for(int iz=0;iz<6;iz++)for(int ix=0;ix<6;ix++)
         {
             var high=new Geo();var medium=new Geo();var low=new Geo();
-            for(int i=0;i<1750;i++)
+            for(int i=0;i<700;i++)
             {
                 float x=-18+ix*6+R(0,6),z=-4+iz*7+R(0,7);
-                float h=R(.055f,.15f)*Mathf.Lerp(1,1.4f,S(10,38,z));float width=R(.012f,.020f);float yaw=R(0,Mathf.PI);
-                var p=new Vector3(x,Height(x,z),z);var col=Palette(x,z);
+                float patch=Mathf.PerlinNoise(x*.35f+18,z*.35f+8);
+                if(patch<.43f || (z>-1 && Mathf.Abs(x-PathX(z))<1.22f) || new Vector2(x-.12f,z).sqrMagnitude<.66f)continue;
+                float h=R(.07f,.19f)*Mathf.Lerp(1,1.3f,S(10,38,z));float width=R(.017f,.035f);float yaw=R(0,Mathf.PI);
+                var p=new Vector3(x,Height(x,z),z);var col=Palette(x,z)*R(.90f,1.05f);
                 high.Blade(p,h,width,yaw,col);if(i%3<2)medium.Blade(p,h,width,yaw,col);if(i%3==0)low.Blade(p,h,width,yaw,col);
+                high.Blade(p+new Vector3(.045f,0,.025f),h*.74f,width*.75f,yaw+.9f,col);
+                if(i%3<2)medium.Blade(p+new Vector3(.045f,0,.025f),h*.74f,width*.75f,yaw+.9f,col);
             }
             string name="Blades_"+ix+"_"+iz;var go=MeshObject(name,high,parent,material);
             chunks.Add(new MeadowGrassLod.Chunk{filter=go.GetComponent<MeshFilter>(),high=go.GetComponent<MeshFilter>().sharedMesh,medium=Save(name+"_Medium",medium.Mesh()),low=Save(name+"_Low",low.Mesh())});
         }
         parent.gameObject.AddComponent<MeadowGrassLod>().Configure(chunks.ToArray());
+    }
+    static void MeadowDetails(Transform parent,Shader shader)
+    {
+        var detail=Mat("MeadowDetails",shader);detail.SetColor("_BaseColor",Color.white);
+        detail.SetFloat("_VertexColor",1);detail.SetColor("_ShadowTint",C("#477D83"));detail.SetFloat("_Wind",0);detail.SetFloat("_CloudShadow",.62f);
+        var flowers=Mat("MeadowFlowers",shader);flowers.SetColor("_BaseColor",Color.white);
+        flowers.SetFloat("_VertexColor",1);flowers.SetColor("_ShadowTint",C("#699A86"));flowers.SetFloat("_Wind",.02f);flowers.SetFloat("_CloudShadow",.35f);
+        var flora=new Geo();
+        var clusters=new[]{new Vector2(-1.8f,1.1f),new Vector2(1.65f,2.7f),new Vector2(-3.4f,4.7f),new Vector2(3.5f,6.8f),new Vector2(-5.6f,7.8f),new Vector2(7.8f,12.5f),new Vector2(-8.2f,17)};
+        for(int c=0;c<clusters.Length;c++)for(int i=0;i<21;i++)
+        {
+            var center=clusters[c];float angle=R(0,Mathf.PI*2),radius=Mathf.Sqrt(R(0,1))*.68f;
+            float x=center.x+Mathf.Cos(angle)*radius,z=center.y+Mathf.Sin(angle)*radius;
+            var p=new Vector3(x,Height(x,z),z);float h=R(.18f,.36f);
+            var stem=C("#668D6D");flora.Blade(p,h,.014f,R(0,Mathf.PI),stem);
+            flora.Blade(p,h*.65f,.065f,R(0,Mathf.PI),C("#80A087"));
+            var top=p+Vector3.up*h;var col=c%3==0?C("#F3E6B0"):C("#E7C966");
+            for(int petal=0;petal<5;petal++)
+            {
+                float a=petal*Mathf.PI*2/5;var outward=new Vector3(Mathf.Cos(a),0,Mathf.Sin(a));var side=Vector3.Cross(Vector3.up,outward);
+                var tip=top+outward*.075f+Vector3.up*.018f;
+                flora.Face(top,tip-side*.045f,tip+side*.045f,col*R(.95f,1.05f));
+            }
+            flora.Face(top+new Vector3(-.023f,.008f,-.019f),top+new Vector3(0,.008f,.028f),top+new Vector3(.023f,.008f,-.019f),C("#C59B47"));
+        }
+        MeshObject("WildflowerClusters",flora,parent,flowers);
+        var rocks=new Geo();
+        foreach(var p in new[]{new Vector3(-3.8f,0,3.1f),new Vector3(-4.4f,0,3.6f),new Vector3(7.3f,0,9),new Vector3(-9,0,13),new Vector3(10,0,21)})
+        {
+            var center=p+Vector3.up*Height(p.x,p.z);float size=R(.35f,.75f);
+            Blob(rocks,center,new Vector3(size,R(.28f,.58f),size*.73f),C("#8B9E9B"),7);
+        }
+        MeshObject("WeatheredMeadowStones",rocks,parent,detail).GetComponent<Renderer>().shadowCastingMode=ShadowCastingMode.On;
+        var shrubs=new Geo();
+        foreach(var p in new[]{new Vector3(-5,0,5),new Vector3(8.2f,0,10.4f),new Vector3(-9.2f,0,15),new Vector3(11.4f,0,22),new Vector3(-15,0,24)})
+        {
+            var center=p+Vector3.up*Height(p.x,p.z);
+            for(int i=0;i<4;i++)Blob(shrubs,center+new Vector3(R(-.4f,.4f),R(.05f,.2f),R(-.35f,.35f)),new Vector3(.62f,.65f,.55f),Color.Lerp(C("#3D7772"),C("#729586"),R(0,1)),8);
+        }
+        MeshObject("RoundedMeadowShrubs",shrubs,parent,detail).GetComponent<Renderer>().shadowCastingMode=ShadowCastingMode.On;
+        var trees=new Geo();
+        foreach(var p in new[]{new Vector3(-16,0,22),new Vector3(-19,0,28),new Vector3(17,0,25),new Vector3(21,0,34),new Vector3(-24,0,40),new Vector3(27,0,49)})
+        {
+            var center=p+Vector3.up*Height(p.x,p.z);float h=R(3.3f,4.5f);
+            Blob(trees,center,new Vector3(.17f,h*.66f,.17f),C("#63776A"),6);
+            Blob(trees,center+Vector3.up*(h*.48f),new Vector3(1.8f,h*.73f,1.5f),Color.Lerp(C("#4D8582"),C("#82A591"),R(0,1)),10);
+        }
+        MeshObject("DistantMeadowGrove",trees,parent,detail).GetComponent<Renderer>().shadowCastingMode=ShadowCastingMode.On;
+    }
+    static void Blob(Geo geo,Vector3 p,Vector3 size,Color color,int sides)
+    {
+        const int rings=4;var vertices=new Vector3[rings,sides];
+        for(int ring=0;ring<rings;ring++)for(int s=0;s<sides;s++)
+        {
+            float t=ring/(float)(rings-1),angle=s*Mathf.PI*2/sides;
+            float radius=(ring==0?.78f:ring==3?.32f:1)*R(.88f,1.12f);
+            vertices[ring,s]=p+Vector3.Scale(new Vector3(Mathf.Cos(angle)*radius,t,Mathf.Sin(angle)*radius),size);
+        }
+        for(int ring=0;ring<rings-1;ring++)for(int s=0;s<sides;s++)
+        {
+            int next=(s+1)%sides;var col=color*Mathf.Lerp(.86f,1.10f,ring/(float)(rings-1));
+            geo.Face(vertices[ring,s],vertices[ring+1,s],vertices[ring,next],col);
+            geo.Face(vertices[ring,next],vertices[ring+1,s],vertices[ring+1,next],col);
+        }
+        for(int s=0;s<sides;s++)geo.Face(vertices[rings-1,s],p+Vector3.up*(size.y*1.04f),vertices[rings-1,(s+1)%sides],color*1.1f);
     }
 }

@@ -37,12 +37,12 @@ Shader "InsectSpace/Painterly Hero"
                 half red=smoothstep(.20,.48,(albedo.r-max(albedo.g,albedo.b))/max(albedo.r,.015));
                 half gold=saturate((albedo.r-albedo.b)*3)*saturate((albedo.g-albedo.b)*5);
                 albedo=lerp(albedo,luma*half3(.44,.80,1.42),red*_PaletteShift);
-                albedo=lerp(albedo,luma*half3(1.08,1.12,1.12),gold*_PaletteShift*.35);
+                albedo=lerp(albedo,luma*half3(1.14,1.06,.83),gold*_PaletteShift*.18);
                 half3 n=normalize(i.n);Light sun=GetMainLight(TransformWorldToShadowCoord(i.world));
                 half ndl=dot(n,sun.direction);half band=smoothstep(-.12,.10,ndl)*.65+smoothstep(.53,.65,ndl)*.35;
                 band=lerp(band,smoothstep(-.35,.85,ndl),_Softness);
-                half shadow=lerp(.63,1,sun.shadowAttenuation);
-                half3 lit=lerp(_ShadowTint.rgb,half3(1.14,1.10,1.02),band)*shadow;
+                half shadow=lerp(.74,1,sun.shadowAttenuation);
+                half3 lit=lerp(_ShadowTint.rgb,half3(1.12,1.08,.97),band)*shadow;
                 half3 env=max(half3(.17,.20,.26),sun.color*.65+SampleSH(n)*.60);
                 half rim=pow(1-saturate(dot(n,normalize(GetWorldSpaceViewDir(i.world)))),3)*.10*saturate(ndl+.3);
                 return half4(MixFog(albedo*lit*env+rim*half3(.68,.79,.82),i.fog),1);

@@ -88,6 +88,48 @@ namespace InsectSpace.Tests
             {sky.SetPreset(preset,0);Assert.AreEqual(preset,sky.CurrentPreset);}
             Assert.NotNull(scene.GetRootGameObjects().SelectMany(g=>g.GetComponentsInChildren<HeroStudyControls>()).Single());
         }
+        [UnityTest] public IEnumerator HeroAndExploreKeepFullCharacterVisibleAcrossAspectChanges()
+        {
+            var camera=scene.GetRootGameObjects().SelectMany(g=>g.GetComponentsInChildren<Camera>()).Single();
+            var framing=camera.GetComponent<HeroStudyFraming>();Assert.NotNull(framing);
+            float originalAspect=camera.aspect;
+            try
+            {
+                foreach(var mode in new[]{HeroStudyFraming.ViewMode.Hero,HeroStudyFraming.ViewMode.Explore})
+                {
+                    framing.SetMode(mode);
+                    foreach(float aspect in new[]{16f/9f,9f/16f,3f/4f})
+                    {
+                        camera.aspect=aspect;yield return null;yield return null;
+                        Assert.IsFalse(camera.orthographic);Assert.AreEqual(mode,framing.Mode);
+                        var baked=new Mesh();
+                        try
+                        {
+                            foreach(float pose in new[]{.1f,.5f,.9f})
+                            {
+                                actor.Play("BreathingIdle",0,pose);actor.Update(0);
+                                foreach(var skin in actor.GetComponentsInChildren<SkinnedMeshRenderer>())
+                                {
+                                    // Renderer bounds include spare space for unrelated animations.
+                                    skin.BakeMesh(baked);baked.RecalculateBounds();var bounds=baked.bounds;
+                                    for(int i=0;i<8;i++)
+                                    {
+                                        var corner=bounds.center+Vector3.Scale(bounds.extents,
+                                            new Vector3((i&1)==0?-1:1,(i&2)==0?-1:1,(i&4)==0?-1:1));
+                                        var point=camera.WorldToViewportPoint(skin.transform.TransformPoint(corner));
+                                        Assert.Greater(point.z,camera.nearClipPlane);
+                                        Assert.That(point.x,Is.InRange(.04f,.96f),mode+" horizontal clipping at "+aspect);
+                                        Assert.That(point.y,Is.InRange(.07f,.94f),mode+" vertical clipping at "+aspect);
+                                    }
+                                }
+                            }
+                        }
+                        finally {Object.Destroy(baked);}
+                    }
+                }
+            }
+            finally {camera.aspect=originalAspect;framing.SetMode(HeroStudyFraming.ViewMode.Hero);}
+        }
         [UnityTest] public IEnumerator MistTransitionsAndRestoresFogWithoutChangingAssets()
         {
             var originalSky=AssetDatabase.LoadAssetAtPath<Material>("Assets/InsectSpace/Rendering/HeroStudy/Materials/HeroCloudSky.mat");
