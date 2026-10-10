@@ -43,11 +43,13 @@ Unity `6000.6.3f1`，项目 `client/unity/InsectSpaceClient`。通过 UnityCLI �
 
 默认湖岸采用沿岸距离流（网格颜色 G）驱动的柔边合成：不规则轮廓与地面共享采样点，浅水横截面从 11 点增至 21 点，水色/反射向浅滩逐渐过渡。窄接触泡沫与移动内侧波带有噪声断续和导数抗锯齿，避免连续硬白描边。两组不同方向/波长的细波纹共同扰动折射、反射和柔和高光；焦散使用连续波场，减少方块状重复。`_StudySoftShore=1`、`_StudyRippleStrength=0.28`、`_StudyShoreStrength=0.55`。FullMap 未提供该距离流，仍采用原 sawtooth 岸线分支。吸收和折射使用真实场景深度，原输出 alpha 不直接当作 URP 透明混合权重。Surface 和 Character 保留 DepthNormals pass，保证当前 SSAO 深度预通道包含水底/人物；反射相机的垂直采样方向已验证。
 
-按用户补充的岸线局部截图，边缘波纹已改为连续向湖内扩散的多道波带。G 通道存储到最近岸线线段的距离，不再只取横向距离，使波峰跟随曲岸形状。默认速度 **0.4 m/s**、间距 **0.8 m**（每 2 秒产生一道）、宽度 **0.065 m**、淡出范围 **2 m**；分别由 `_StudyShoreWaveSpeed/Spacing/Width/Range` 控制，强度为 `_StudyShoreWaveStrength=0.75`。`_StudyShoreWaveTime=-1` 使用实时渲染时间，非负值仅用于可重复录帧；诊断结束恢复实时值。近岸渐入与远处淡出避免波带在周期边界突然出现。
+2026-10-10 根据 MuMu 实时录屏和用户纠正，边缘波纹改为从湖内向岸边推进、到岸逐渐消隐的细波带。G 通道存储到最近岸线线段的距离，使波峰跟随曲岸形状；相位随时间增加时，同一道波峰到岸的距离减小。默认速度 **0.4 m/s**、间距 **0.8 m**（周期 2 秒）、宽度 **0.045 m**、淡出范围 **1.8 m**；分别由 `_StudyShoreWaveSpeed/Spacing/Width/Range` 控制，强度为 `_StudyShoreWaveStrength=0.6`。`_StudyShoreWaveTime=-1` 使用实时渲染时间，非负值仅用于可重复录帧；诊断结束恢复实时值。近岸渐隐与远处淡入保持周期连续。
+
+浅岸新增小幅水面起伏及接触线进退：`_StudyShoreSwayHeight=0.009 m`、`_StudyShoreSwayWidth=0.035 m`，基础波与受限谐波沿岸错相，至距岸 **1.2 m** 衰减至零。网格顶点的真实高度变化影响表面法线、高光与反射扰动；接触泡沫和水面覆盖共用同一波场。GPU 样点测得高度峰峰值约 **1.55 cm**、接触线偏移峰峰值约 **6.07 cm**，深水位移为零。FullMap 的 `_StudySoftShore=0` 不启用该位移。
 
 `CompareAfkRecovered.Run` 保存可逆的昼夜 A/B 截图，结束后恢复材质、光照和 Renderer 属性，不保存实验场景。原方向光、原 zone-light 路径、白色/绿色顶面及更黄的暖光均已对照；在当前缺少完整区域数据的构图中，原 zone-light 直用偏亮偏青，最终保留校准方向和绿色顶面，未采用更黄的暖光。植被曾在比较后缩小而阴影尺寸正常，已定位为空 `MaterialPropertyBlock` 的恢复问题；空块使用 `SetPropertyBlock(null)` 清除。Shader 的 `DisableBatching=True` 保证对象空间变形不被动态批处理改变，但不是该回归修复的证据。
 
-`CompareAfkRecovered.CompareShoreGrass` 可逆比较旧岸线与草叶校准；`ComparePlateau` 比较高台与岩壁顶面参数，证据位于 `advanced/plateau/`。历史比较使用当时基线，最终值以上述参数和 `water-fairy/` 最新验证图为准。
+`CompareAfkRecovered.CompareShoreGrass` 可逆比较旧岸线与草叶校准；`ComparePlateau` 比较高台与岩壁顶面参数，证据位于 `advanced/plateau/`。历史比较使用当时基线，最终值以上述参数和 2026-10-10 `shore-waves/` 最新验证图为准。
 
 原编译程序保存在 `Assets/Temp/AFKStudy/RenderSource/Shaders/`，不能直接作为 Windows / Unity 6 的 URP Shader 使用。适配源码位于 `Assets/InsectSpace/Rendering/AfkStudy/`，没有替换全项目 URP 管线。
 
@@ -89,14 +91,14 @@ python -B -m AgentScripts.ExtractAfkAdvancedRendering
 
 ## 验证与差距
 
-最新扩散波纹证据为 `.artifacts/validation/afk-recovered/2026-10-09/shore-waves/`：`Shore-Waves.gif`、40 个连续帧、昼夜近景、`shore-waves-probe.json`、命令结果及回归日志。`VerifyAfkShoreWaves.Run` 从浮点 GPU 诊断图测得波峰在 0.6 秒内向外推进 **0.2355 m**（目标 0.24 m），两米外 mask=0，2 秒周期误差 **1.55e−6**。开启/关闭扩散波纹变化 **13,087** 像素（960×540）。上一轮 `water-fairy/` 保留水深/反射、精灵开关、Day/Night/Dawn/Dusk 八图与回归证据；`advanced/`、父目录及 2026-10-08 目录保留更早的基线。
+最新向岸波纹和浅岸起伏证据为 `.artifacts/validation/afk-recovered/2026-10-10/shore-waves/`：`Shore-Waves.gif`、40 个连续帧、昼夜近景、起伏 A/B、`shore-waves-probe.json`、命令结果及回归日志。`VerifyAfkShoreWaves.Run` 从浮点 GPU 诊断图测得 0.8 / 1.4 / 2.8 秒的波峰距岸为 **0.453011 / 0.218399 / 0.453011 m**，0.6 秒内向岸移动 **0.234613 m**（目标 0.24 m）；远处 mask=0，2 秒周期误差 **2.71e−6**。高度峰峰值 **0.015527 m**、水线偏移峰峰值 **0.060651 m**，深水位移为 **0**，起伏周期误差 **1.20e−7**。波带与起伏开关分别改变 **8,511 / 3,257** 像素（960×540）。同目录 `advanced/` 保存晨昏昼夜横竖屏八图，`water-fairy/` 保存精灵开关复验；2026-10-09 及更早目录保留历史基线。
 
 Play 下运行 `VerifyAfkAdvanced.Run`：冻结角色与时间后逐项开关水深合成、平面反射、体积雾、云影、SDF、皮肤透射、IBL 和轮廓光，重复帧噪声为 0，各效果都有可测像素变化；扫描 16 个云相位，检查反射标记镜像位置、数值水深及午夜循环。三个湖内样点深度约 0.68 米，反射开关前后相同，证明深度来自主相机的水底；不能仅凭开关后图像变化认定深度正确。`VerifyAfkRecovered.Run` 另检查材质、真实蒙皮变形、根稳定、人物裁切和光影。这些专项探针不计作 Unity Test Runner 用例。
 
-水岸与小精灵更新后，`VerifyAfkWaterFairy.Run` 验证白天/夜间隐藏与恢复、五个时间点及跨午夜保持隐藏；`VerifyAfkAdvanced.RunWaterFairy` 复验深度、反射、云雾和角色高级着色，保存独立证据。Foundation **85/85**、Architecture 通过、HeroCloudStudy PlayMode **5/5**。默认场景保存为 Day、240 秒连续循环，Editor 保持 Play 供预览。
+本轮 `VerifyAfkWaterFairy.RunShoreWaves` 验证白天/夜间隐藏与恢复、五个时间点及跨午夜保持隐藏；`VerifyAfkAdvanced.RunShoreWaves` 复验深度、反射、云雾和角色高级着色。三个水底样点深度为 **0.681758 / 0.677005 / 0.688754 m**，反射开关前后相同，镜像位置有 **810** 个标记像素，重复帧噪声为 **0**。Foundation **85/85**、Architecture 通过、HeroCloudStudy PlayMode **5/5**；最终 Unity 编译 0 errors / 0 warnings，水 Shader 诊断为空。默认场景保存为 Day、240 秒连续循环、小精灵隐藏，Editor 保持 Play 供预览，面板可重新显示精灵。
 
 当前差距：动态家园布局未恢复；整体布局、花朵尺度、参考主角和建筑特效仍未完全匹配。水面、云影、体积雾和角色高级着色已在 URP 中接通并验证，但不是原专有渲染器的逐条移植，也不代表像素一致。地表使用原 VT 配合原模板重建，湖岸网格按参考构图生成。
 
-homestead_01 VT 索引仅有 38 个可用页面，另有 13 个缺失 bundle，所属 `LDRes/prgroup_LDRes_VT_5130716192642926209.lpak` 在本机档案与当前 MuMu 中均未找到。现有 1536×2048 的 `diffuse-world.png` 是粗级拼图，无法提供参考中的细级地表画笔色块；模板草地图块和水域噪声遮罩只能近似，不能称为补回原始 VT。MuMu 本轮最终参考图为 `.artifacts/reference/afk-journey/mumu-oct09-day-live.png`（白天）及 `mumu-oct09-continuation.png`（夜晚），均为实时游戏画面；早期保存照片不再作为最新对照，比较时排除 UI。
+homestead_01 VT 索引仅有 38 个可用页面，另有 13 个缺失 bundle，所属 `LDRes/prgroup_LDRes_VT_5130716192642926209.lpak` 在本机档案与当前 MuMu 中均未找到。现有 1536×2048 的 `diffuse-world.png` 是粗级拼图，无法提供参考中的细级地表画笔色块；模板草地图块和水域噪声遮罩只能近似，不能称为补回原始 VT。最新 MuMu 实时参考为 `.artifacts/reference/afk-journey/mumu-oct10-water-live.png`（白天）及 `mumu-oct10-water-live.mp4`（夜间水岸录屏），相位合图为 `mumu-oct10-water-phases.jpg`；比较时排除 UI。2026-10-09 的昼夜截图保留为整体光照校准基线。
 
 参考商业资源和截图保留在忽略的 Assets/Temp/AFKStudy、.artifacts，遵循项目本地研究边界。未进行移动 GPU/内存基准、团结/WebGL 构建、微信真机或发布验收。实际回归见 `docs/Validation.md`。
